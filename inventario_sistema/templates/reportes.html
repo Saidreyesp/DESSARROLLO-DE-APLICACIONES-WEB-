@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes de Inventario</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .report-section { margin: 30px 0; background: #f9f9f9; padding: 20px; border-radius: 5px; }
+        .report-summary { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .report-card { flex: 1; min-width: 150px; background: white; padding: 15px; border: 1px solid #ddd; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gestión de Inventario</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/productos">Productos</a></li>
+                <li><a href="/reportes">Reportes</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Reportes de Inventario</h2>
+
+        <!-- RESUMEN -->
+        <div class="report-section">
+            <h3>📊 Resumen General</h3>
+            <div class="report-summary">
+                <div class="report-card">
+                    <strong>Total de Productos</strong>
+                    <p style="font-size: 24px; color: #007bff;">{{ total_productos }}</p>
+                </div>
+                <div class="report-card">
+                    <strong>Cantidad Total en Stock</strong>
+                    <p style="font-size: 24px; color: #28a745;">{{ cantidad_total }}</p>
+                </div>
+                <div class="report-card">
+                    <strong>Valor Total del Inventario</strong>
+                    <p style="font-size: 24px; color: #ffc107;">${{ "%.2f"|format(valor_total) }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BAJO STOCK -->
+        {% if bajo_stock %}
+        <div class="report-section">
+            <h3>⚠️ Productos con Bajo Stock (< 5 unidades)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in bajo_stock %}
+                    <tr>
+                        <td>{{ p.id }}</td>
+                        <td>{{ p.nombre }}</td>
+                        <td><strong>{{ p.cantidad }}</strong></td>
+                        <td>${{ "%.2f"|format(p.precio) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- LISTADO COMPLETO -->
+        <div class="report-section">
+            <h3>📋 Listado Completo de Productos</h3>
+            {% if productos %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Cantidad</th>
+                        <th>Precio</th>
+                        <th>Categoría</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in productos %}
+                    <tr>
+                        <td>{{ p.id }}</td>
+                        <td>{{ p.nombre }}</td>
+                        <td>{{ p.cantidad }}</td>
+                        <td>${{ "%.2f"|format(p.precio) }}</td>
+                        <td>{{ p.categoria or '-' }}</td>
+                        <td>${{ "%.2f"|format(p.cantidad * p.precio) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No hay productos en el inventario.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Inventario</p>
+    </footer>
+</body>
+</html>

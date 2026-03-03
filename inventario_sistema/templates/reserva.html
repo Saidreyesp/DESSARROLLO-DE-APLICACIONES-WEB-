@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Reserva - Restaurante La Buena Mesa{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h2 class="mb-0">📅 Reserva para {{ cliente }}</h2>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-success">
+                    <h5>{{ mensaje }}</h5>
+                </div>
+                <p class="lead">Gracias por elegir <strong>{{ negocio_name or 'Restaurante La Buena Mesa' }}</strong>. Te contactaremos pronto para confirmar tu reserva.</p>
+                
+                <div class="mt-4">
+                    <h5>Próximos pasos:</h5>
+                    <ol>
+                        <li>Recibirás una confirmación por correo electrónico</li>
+                        <li>Nuestro equipo te contactará para detalles finales</li>
+                        <li>¡Prepárate para una experiencia gastronómica inolvidable!</li>
+                    </ol>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="/menu" class="btn btn-primary">📋 Ver Menú</a>
+                <a href="/" class="btn btn-secondary">🏠 Volver al Inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Datos Almacenados - {{ negocio_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">
+        <i class="fas fa-database"></i> Datos Almacenados - Múltiples Fuentes
+    </h1>
+    
+    <!-- Advertencia informativa -->
+    <div class="alert alert-info" role="alert">
+        <strong>ℹ️ Información:</strong> Esta página muestra todos los registros guardados en diferentes formatos de persistencia.
+        Los datos se sinconizan automáticamente cuando se crear, editar o eliminar productos.
+    </div>
+
+    <!-- Navegación por tabs -->
+    <ul class="nav nav-tabs mb-4" id="dataTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="sqlite-tab" data-bs-toggle="tab" data-bs-target="#sqlite" type="button" role="tab">
+                <i class="fas fa-database"></i> SQLite (Base de Datos)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="json-tab" data-bs-toggle="tab" data-bs-target="#json" type="button" role="tab">
+                <i class="fas fa-file-code"></i> JSON (datos.json)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="csv-tab" data-bs-toggle="tab" data-bs-target="#csv" type="button" role="tab">
+                <i class="fas fa-file-csv"></i> CSV (datos.csv)
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="txt-tab" data-bs-toggle="tab" data-bs-target="#txt" type="button" role="tab">
+                <i class="fas fa-file-alt"></i> TXT (datos.txt)
+            </button>
+        </li>
+    </ul>
+
+    <!-- Contenido de tabs -->
+    <div class="tab-content" id="dataTabsContent">
+        
+        <!-- SQLite Tab -->
+        <div class="tab-pane fade show active" id="sqlite" role="tabpanel">
+            <h3>
+                <i class="fas fa-database"></i> Base de Datos SQLite
+                <span class="badge bg-primary">{{ db_items|length }} registros</span>
+            </h3>
+            
+            {% if db_items %}
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                                <th>Categoría</th>
+                                <th>Valor Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in db_items %}
+                                <tr>
+                                    <td><strong>{{ p.id }}</strong></td>
+                                    <td>{{ p.nombre }}</td>
+                                    <td>${{ "%.2f"|format(p.precio) }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ p.cantidad }}</span>
+                                    </td>
+                                    <td>
+                                        {% if p.categoria %}
+                                            <span class="badge bg-secondary">{{ p.categoria }}</span>
+                                        {% else %}
+                                            <span class="text-muted">N/A</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>${{ "%.2f"|format(p.precio * p.cantidad) }}</td>
+                                    <td>
+                                        <a href="{{ url_for('ver_producto', id=p.id) }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Ver
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Resumen SQLite -->
+                <div class="row mt-4">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Total de Productos</h5>
+                                <h3 class="text-primary">{{ db_items|length }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Cantidad Total</h5>
+                                <h3 class="text-info">
+                                    {% set total_qty = db_items|map(attribute='cantidad')|sum %}
+                                    {{ total_qty }}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Valor Total</h5>
+                                <h3 class="text-success">
+                                    {% set total_valor = 0 %}
+                                    {% for p in db_items %}
+                                        {% set total_valor = total_valor + (p.precio * p.cantidad) %}
+                                    {% endfor %}
+                                    ${{ "%.2f"|format(total_valor) }}
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-warning mt-4" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> No hay registros en la base de datos SQLite
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- JSON Tab -->
+        <div class="tab-pane fade" id="json" role="tabpanel">
+            <h3>
+                <i class="fas fa-file-code"></i> Archivo JSON
+                <span class="badge bg-success">{{ json_data|length }} registros</span>
+            </h3>
+            
+            {% if json_data %}
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped">
+                        <thead class="table-success">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in json_data %}
+                                <tr>
+                                    <td>{{ r.get('id', 'N/A') }}</td>
+                                    <td>{{ r.get('nombre', 'N/A') }}</td>
+                                    <td>${{ "%.2f"|format(r.get('precio', 0)|float) }}</td>
+                                    <td>{{ r.get('cantidad', 'N/A') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Vista JSON raw -->
+                <div class="mt-4">
+                    <h5>Datos en Formato JSON:</h5>
+                    <pre class="bg-light p-3 rounded"><code>{{ json_data|tojson }}</code></pre>
+                </div>
+            {% else %}
+                <div class="alert alert-warning mt-4" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> No hay registros en el archivo JSON
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- CSV Tab -->
+        <div class="tab-pane fade" id="csv" role="tabpanel">
+            <h3>
+                <i class="fas fa-file-csv"></i> Archivo CSV
+                <span class="badge bg-danger">{{ csv|length }} registros</span>
+            </h3>
+            
+            {% if csv %}
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped">
+                        <thead class="table-danger">
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in csv %}
+                                <tr>
+                                    <td>{{ r.get('nombre', 'N/A') }}</td>
+                                    <td>${{ "%.2f"|format(r.get('precio', '0')|float) }}</td>
+                                    <td>{{ r.get('cantidad', 'N/A') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Vista raw CSV -->
+                <div class="mt-4">
+                    <h5>Contenido del archivo CSV:</h5>
+                    <pre class="bg-light p-3 rounded">{{ csv|tojson(indent=2) }}</pre>
+                </div>
+            {% else %}
+                <div class="alert alert-warning mt-4" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> No hay registros en el archivo CSV
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- TXT Tab -->
+        <div class="tab-pane fade" id="txt" role="tabpanel">
+            <h3>
+                <i class="fas fa-file-alt"></i> Archivo TXT
+                <span class="badge bg-warning">{{ txt|length }} registros</span>
+            </h3>
+            
+            {% if txt %}
+                <div class="table-responsive mt-4">
+                    <table class="table table-striped">
+                        <thead class="table-warning">
+                            <tr>
+                                <th>#</th>
+                                <th>Registro Completo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in txt %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>
+                                        <code>{{ r }}</code>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Vista JSON de registros -->
+                <div class="mt-4">
+                    <h5>Registros en formato JSON:</h5>
+                    <pre class="bg-light p-3 rounded">{{ txt|tojson(indent=2) }}</pre>
+                </div>
+            {% else %}
+                <div class="alert alert-warning mt-4" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> No hay registros en el archivo TXT
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sección de información -->
+    <div class="mt-5 p-4 bg-light rounded">
+        <h4>ℹ️ Información sobre Persistencia de Datos</h4>
+        <p class="mb-2">
+            <strong>📊 SQLite:</strong> Base de datos relacional estructurada. Ideal para operaciones complejas y consultas.
+        </p>
+        <p class="mb-2">
+            <strong>📄 JSON:</strong> Formato JavaScript Object Notation. Fácil de leer y procesar por aplicaciones.
+        </p>
+        <p class="mb-2">
+            <strong>📋 CSV:</strong> Comma-Separated Values. Compatible con programas como Excel y hojas de cálculo.
+        </p>
+        <p class="mb-0">
+            <strong>📝 TXT:</strong> Texto plano. Legible directamente. Cada línea contiene un registro en JSON.
+        </p>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="mt-4 mb-5">
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> Volver al Inicio
+        </a>
+        <a href="{{ url_for('productos') }}" class="btn btn-info">
+            <i class="fas fa-list"></i> Ver Productos
+        </a>
+        <a href="{{ url_for('nuevo_producto') }}" class="btn btn-success">
+            <i class="fas fa-plus"></i> Agregar Producto
+        </a>
+    </div>
+</div>
+
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.075);
+    }
+    
+    .nav-tabs .nav-link {
+        border-radius: 0.25rem 0.25rem 0 0 !important;
+    }
+    
+    pre {
+        max-height: 400px;
+        overflow-y: auto;
+        font-size: 0.875rem;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+
+{% endblock %}

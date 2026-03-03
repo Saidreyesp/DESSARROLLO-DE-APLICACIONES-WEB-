@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Producto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .search-box { margin: 20px 0; }
+        .search-box input { padding: 10px; width: 80%; font-size: 16px; }
+        .search-box button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gestión de Inventario</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/productos">Productos</a></li>
+                <li><a href="/buscar">Buscar</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Buscar Producto</h2>
+        
+        <form method="GET" class="search-box">
+            <input type="text" name="termino" placeholder="Ingrese nombre o descripción..." value="{{ termino }}">
+            <button type="submit">Buscar</button>
+        </form>
+
+        {% if termino %}
+        <h3>Resultados para: "{{ termino }}"</h3>
+        
+        {% if resultados %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in resultados %}
+                <tr>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.cantidad }}</td>
+                    <td>${{ "%.2f"|format(p.precio) }}</td>
+                    <td>{{ p.categoria or '-' }}</td>
+                    <td>
+                        <a href="/producto/{{ p.id }}" style="text-decoration: none; color: #007bff;">Ver</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No se encontraron resultados para: "{{ termino }}"</p>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Inventario</p>
+    </footer>
+</body>
+</html>

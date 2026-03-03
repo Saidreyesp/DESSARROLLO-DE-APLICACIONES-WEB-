@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - Página no encontrada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .error-container { text-align: center; padding: 100px 20px; }
+        .error-code { font-size: 72px; color: #dc3545; font-weight: bold; }
+        .error-message { font-size: 24px; color: #666; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gestión de Inventario</h1>
+    </header>
+
+    <div class="container error-container">
+        <div class="error-code">404</div>
+        <div class="error-message">Página no encontrada</div>
+        <p>La página que intentas acceder no existe.</p>
+        <a href="/" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px;">
+            Volver al inicio
+        </a>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Inventario</p>
+    </footer>
+</body>
+</html>

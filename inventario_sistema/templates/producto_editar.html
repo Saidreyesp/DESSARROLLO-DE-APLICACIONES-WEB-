@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Producto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gestión de Inventario</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/productos">Productos</a></li>
+                <li><a href="/">Volver</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 600px; margin: 50px auto;">
+        <h2>Editar Producto</h2>
+        
+        <form method="POST" style="background: #f9f9f9; padding: 20px; border-radius: 5px;">
+            <div style="margin-bottom: 15px;">
+                <label for="nombre">Nombre del Producto:</label><br>
+                <input type="text" id="nombre" name="nombre" value="{{ producto.nombre }}" required>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="cantidad">Cantidad:</label><br>
+                <input type="number" id="cantidad" name="cantidad" value="{{ producto.cantidad }}" required>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="precio">Precio Unitario:</label><br>
+                <input type="number" id="precio" name="precio" value="{{ producto.precio }}" step="0.01" required>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="categoria">Categoría:</label><br>
+                <input type="text" id="categoria" name="categoria" value="{{ producto.categoria or '' }}">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label for="descripcion">Descripción:</label><br>
+                <textarea id="descripcion" name="descripcion" rows="4">{{ producto.descripcion or '' }}</textarea>
+            </div>
+
+            <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+                Actualizar Producto
+            </button>
+            <a href="/productos" style="margin-left: 10px; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none;">
+                Cancelar
+            </a>
+        </form>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Inventario</p>
+    </footer>
+</body>
+</html>
