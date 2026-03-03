@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería Interactiva - Semana 5</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Galería Interactiva</h1>
+            <p>Agrega, selecciona y elimina imágenes de manera dinámica</p>
+        </header>
+
+        <div class="controls">
+            <div class="input-group">
+                <input 
+                    type="url" 
+                    id="imageUrl" 
+                    placeholder="Ingresa la URL de una imagen"
+                    class="url-input"
+                >
+                <button id="addImageBtn" class="btn btn-add">
+                    Agregar Imagen
+                </button>
+            </div>
+            <button id="deleteImageBtn" class="btn btn-delete" disabled>
+                Eliminar Imagen Seleccionada
+            </button>
+        </div>
+
+        <div id="gallery" class="gallery">
+            <!-- Las imágenes se agregarán dinámicamente aquí -->
+        </div>
+
+        <div class="info-message" id="infoMessage">
+            <p>Ingresa una URL de imagen y haz clic en Agregar Imagen para comenzar</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

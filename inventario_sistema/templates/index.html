@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Restaurante La Buena Mesa{% endblock %}
+
+{% block content %}
+<!-- Hero banner -->
+<div class="row bg-image text-white" style="background: url('https://source.unsplash.com/1600x900/?restaurant,food') center/cover no-repeat;">
+    <div class="col-md-12 py-5" style="background: rgba(0,0,0,0.4);">
+        <h2 class="display-5 fw-bold">¡Bienvenidos a {{ negocio_name or 'Nuestro Restaurante' }} en Quevedo!</h2>
+        <p class="lead">Disfruta de platos tradicionales con la esencia de nuestra ciudad: frescura, sazón y cariño.</p>
+        <a href="/menu" class="btn btn-primary btn-lg mt-3">🍽️ Descubrir Nuestro Menú</a>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3 class="mt-4">Sobre Nosotros</h3>
+        <p class="lead">En Quevedo, nos apasiona brindarte experiencias culinarias inolvidables. Cada plato está preparado con ingredientes frescos y amor por la gastronomía ecuatoriana.</p>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Total de Platos</h5>
+                <p class="display-4 text-primary">{{ total }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Valor Total del Catálogo</h5>
+                <p class="display-4 text-success">${{ "%.2f"|format(valor) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Platos con Bajo Stock</h5>
+                <p class="display-4 text-warning">{{ bajo_stock|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if bajo_stock %}
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="alert alert-warning">
+            <h4>⚠️ Platos con Bajo Stock (< 5 unidades)</h4>
+            <ul class="mb-0">
+                {% for p in bajo_stock %}
+                <li><strong>{{ p.nombre }}</strong> - Cantidad: {{ p.cantidad }} - 
+                    <a href="/plato/{{ p.nombre }}" class="btn btn-sm btn-info">Ver</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <a href="/menu" class="btn btn-primary btn-lg">📋 Ver Menú Completo</a>
+        <a href="/producto/nuevo" class="btn btn-success btn-lg">➕ Añadir Nuevo Plato</a>
+        <a href="/reportes" class="btn btn-secondary btn-lg">📊 Ver Reportes</a>
+    </div>
+</div>
+{% endblock %}

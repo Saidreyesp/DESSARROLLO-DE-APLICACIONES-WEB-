@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Proyecto Web - Semana 3</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Mi Proyecto Web de HTML5</h1>
+        <p><strong>Este proyecto demuestra el uso de etiquetas semánticas en HTML5 y CSS.</strong></p>
+        <p><em>Desarrollado como parte de la actividad de la Semana 3</em></p>
+    </header>
+
+    <!-- Navegación -->
+    <nav>
+        <ul>
+            <li><a href="#seccion1">Sobre el Proyecto</a></li>
+            <li><a href="#seccion2">Multimedia</a></li>
+            <li><a href="#listas">Listas</a></li>
+            <li><a href="#tabla">Tabla</a></li>
+            <li><a href="#contacto">Formulario</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main -->
+    <main>
+        <!-- Sección 1: Información sobre el proyecto -->
+        <section id="seccion1">
+            <article>
+                <h2>Sobre este Proyecto</h2>
+                <p>Este sitio web fue creado como parte de una actividad de un curso de desarrollo web. El objetivo es aplicar conocimientos de <strong>HTML5</strong> y <strong>CSS</strong> para crear una página estructurada y llamativa.</p>
+                <p><em>La página incluye elementos semánticos, multimedia, listas, tablas y formularios.</em></p>
+                
+                <h3>Tecnologías Utilizadas</h3>
+                <p>Para este proyecto se utilizaron las siguientes tecnologías: <strong>HTML5</strong> para la estructura, <strong>CSS3</strong> para los estilos, y <strong>GitHub Pages</strong> para el hosting.</p>
+            </article>
+        </section>
+
+        <!-- Sección 2: Multimedia -->
+        <section id="seccion2">
+            <h2>Imagen y Video</h2>
+            <p>A continuación se muestran una <strong>imagen</strong> y un <strong>video</strong> que forman parte del contenido multimedia de esta página:</p>
+
+            <!-- Imagen desde el repositorio -->
+            <figure>
+                <img src="https://ethic.es/wp-content/uploads/2023/03/imagen-1280x768.jpg" alt="Paisaje colorido de ejemplo" />
+                <figcaption>Imagen cargada desde el repositorio (assets/img/imagen1.jpg)</figcaption>
+            </figure>
+
+            <!-- Video desde el repositorio -->
+            <figure>
+                <video controls>
+                    <source src="file:///C:/Users/11pro4minutes/Downloads/rabbit320.mp4" type="video/mp4">
+                    Tu navegador no soporta el elemento video.
+                </video>
+                <figcaption>Video cargado desde el repositorio (assets/video/video1.mp4)</figcaption>
+            </figure>
+        </section>
+
+        <!-- Sección 3: Listas -->
+        <section id="listas">
+            <h2>Listas Ordenada y Desordenada</h2>
+            <p>En esta sección se incluyen ejemplos de listas ordenadas y desordenadas:</p>
+
+            <!-- Lista ordenada -->
+            <article>
+                <h3>Pasos del Proyecto (Lista ordenada)</h3>
+                <ol>
+                    <li>Configurar el entorno de trabajo</li>
+                    <li>Crear la estructura de carpetas</li>
+                    <li>Desarrollar el archivo HTML</li>
+                    <li>Aplicar estilos con CSS</li>
+                    <li>Subir el proyecto a GitHub</li>
+                    <li>Publicar con GitHub Pages</li>
+                </ol>
+            </article>
+
+            <!-- Lista desordenada -->
+            <article>
+                <h3>Recursos de Aprendizaje (Lista desordenada)</h3>
+                <ul>
+                    <li>Documentación de MDN Web Docs</li>
+                    <li>Tutoriales de W3Schools</li>
+                    <li>Curso de desarrollo web</li>
+                    <li>Visual Studio Code con Live Server</li>
+                    <li>GitHub para control de versiones</li>
+                </ul>
+            </article>
+
+            <!-- Enlace externo -->
+            <p>Para más información sobre HTML5, visita: 
+                <a href="https://developer.mozilla.org/es/docs/Web/HTML" target="_blank">MDN Web Docs - HTML</a>
+            </p>
+        </section>
+
+        <!-- Sección 4: Tabla -->
+        <section id="tabla">
+            <h2>Tabla de Planificación del Proyecto</h2>
+            <p>Esta tabla muestra la <em>planificación detallada</em> del proyecto con los elementos implementados:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Elemento</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Estructura HTML5</td>
+                        <td>Etiquetas semánticas: header, nav, main, section, article, footer</td>
+                        <td>✅ Completado</td>
+                    </tr>
+                    <tr>
+                        <td>Estilos CSS</td>
+                        <td>Diseño responsivo con colores personalizados y gradientes</td>
+                        <td>✅ Completado</td>
+                    </tr>
+                    <tr>
+                        <td>Multimedia</td>
+                        <td>Imagen y video desde carpeta assets del repositorio</td>
+                        <td>✅ Completado</td>
+                    </tr>
+                    <tr>
+                        <td>Listas</td>
+                        <td>Listas ordenadas (ol) y desordenadas (ul)</td>
+                        <td>✅ Completado</td>
+                    </tr>
+                    <tr>
+                        <td>Tabla</td>
+                        <td>Tabla con thead, tbody y estilos personalizados</td>
+                        <td>✅ Completado</td>
+                    </tr>
+                    <tr>
+                        <td>Formulario</td>
+                        <td>Formulario de contacto con validación</td>
+                        <td>✅ Completado</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Sección 5: Formulario de Contacto -->
+        <section id="contacto">
+            <h2>Formulario de Contacto</h2>
+            <p>Por favor, <strong>completa este formulario</strong> para enviarnos tus comentarios:</p>
+
+            <form action="#" method="post">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Escribe tu nombre completo" required>
+
+                <label for="correo">Correo Electrónico:</label>
+                <input type="email" id="correo" name="correo" placeholder="ejemplo@correo.com" required>
+
+                <button type="submit">Enviar</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Proyecto Web Estudiantil - Semana 3</p>
+        <p><em>Desarrollado con HTML5 y CSS3</em></p>
+    </footer>
+
+</body>
+</html>

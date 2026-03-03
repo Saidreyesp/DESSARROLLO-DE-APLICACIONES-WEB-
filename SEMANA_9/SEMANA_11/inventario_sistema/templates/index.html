@@ -1,0 +1,30 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurante El Gran Sabor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Bienvenidos a El Gran Sabor</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Inicio</a></li>
+                <li><a href="/about">Acerca de Nosotros</a></li>
+                <li><a href="/productos">Productos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>¡Disfruta de nuestros deliciosos platillos!</h2>
+        <p>Comida tradicional ecuatoriana con el mejor sabor.</p>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Restaurante El Gran Sabor</p>
+    </footer>
+</body>
+</html>

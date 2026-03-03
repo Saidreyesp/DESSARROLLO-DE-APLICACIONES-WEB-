@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Restaurante El Gran Sabor</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #fff7ed;
+        }
+        h1, h2, h3 {
+            color: #8b0000;
+        }
+        .card img {
+            height: 220px;
+            object-fit: cover;
+        }
+        .precio {
+            font-size: 20px;
+            color: #155724;
+            font-weight: bold;
+        }
+        footer {
+            background-color: #8b0000;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark" style="background-color:#8b0000;">
+    <div class="container">
+        <span class="navbar-brand">🍽️ Restaurante El Gran Sabor</span>
+    </div>
+</nav>
+
+<div class="container mt-5">
+
+    <!-- PRESENTACIÓN -->
+    <section class="text-center mb-5">
+        <h1>Bienvenidos a El Gran Sabor</h1>
+        <p class="lead">
+            Restaurante dedicado a la comida típica ecuatoriana,
+            ofreciendo platos tradicionales preparados con ingredientes frescos
+            y recetas auténticas.
+        </p>
+    </section>
+
+    <!-- MENÚ -->
+    <h2 class="text-center mb-4">🍴 Menú Principal</h2>
+
+    <div class="row">
+
+        <!-- ENCEBOLLADO -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="https://www.recetasnestle.com.ec/sites/default/files/srh_recipes/7ea4f3b2af8bb20231ff3c4f13e685ab.jpg">
+                <div class="card-body text-center">
+                    <h5>Encebollado</h5>
+                    <p class="precio">$4.50</p>
+                    <a href="#encebollado" class="btn btn-danger">Ver detalle</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ARROZ -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80">
+                <div class="card-body text-center">
+                    <h5>Arroz con Pollo</h5>
+                    <p class="precio">$5.00</p>
+                    <a href="#arroz" class="btn btn-danger">Ver detalle</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CEVICHE -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="https://www.recetasnestle.com.ec/sites/default/files/styles/recipe_detail_desktop_new/public/srh_recipes/bbb31707c4bd37def6dd0ae89d42e085.webp">
+                <div class="card-body text-center">
+                    <h5>Ceviche</h5>
+                    <p class="precio">$6.00</p>
+                    <a href="#ceviche" class="btn btn-danger">Ver detalle</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <hr>
+
+    <!-- DETALLES -->
+    <section id="encebollado" class="mt-5">
+        <h3>🍲 Encebollado</h3>
+        <img src="https://www.recetasnestle.com.ec/sites/default/files/srh_recipes/7ea4f3b2af8bb20231ff3c4f13e685ab.jpg" class="img-fluid rounded mb-3">
+        <p>
+            Plato tradicional ecuatoriano preparado con pescado fresco,
+            yuca cocida y cebolla encurtida. Muy popular como desayuno
+            por su alto valor energético.
+        </p>
+        <p class="precio">Precio: $4.50</p>
+    </section>
+
+    <section id="arroz" class="mt-5">
+        <h3>🍛 Arroz con Pollo</h3>
+        <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?auto=format&fit=crop&w=800&q=80" class="img-fluid rounded mb-3">
+        <p>
+            Arroz condimentado acompañado de pollo guisado,
+            vegetales y ensalada fresca. Ideal para el almuerzo.
+        </p>
+        <p class="precio">Precio: $5.00</p>
+    </section>
+
+    <section id="ceviche" class="mt-5">
+        <h3>🍤 Ceviche</h3>
+        <img src="https://www.recetasnestle.com.ec/sites/default/files/styles/recipe_detail_desktop_new/public/srh_recipes/bbb31707c4bd37def6dd0ae89d42e085.webp" class="img-fluid rounded mb-3">
+        <p>
+            Ceviche preparado con mariscos frescos marinados en limón,
+            acompañado de cebolla, tomate y especias tradicionales
+            de la costa ecuatoriana.
+        </p>
+        <p class="precio">Precio: $6.00</p>
+    </section>
+
+</div>
+
+<footer>
+    © 2026 Restaurante El Gran Sabor | Proyecto Académico
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Sitio Bootstrap Avanzado</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* ===== ESTILOS PERSONALIZADOS ===== */
+        
+        /* Variables CSS para mantener consistencia */
+        :root {
+            --primary-color: #ff5733;
+            --secondary-color: #2c3e50;
+            --accent-color: #3498db;
+            --gradient-start: #667eea;
+            --gradient-end: #764ba2;
+        }
+        
+        /* Gradiente de fondo para el body */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        /* Personalización del botón primary */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), #c70039);
+            border: none;
+            padding: 12px 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(214, 60, 26, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #927a81, var(--primary-color));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 87, 51, 0.5);
+        }
+        
+        /* Estilo del navbar con efecto glassmorphism */
+        .navbar {
+            background: rgba(44, 62, 80, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Estilo del header principal */
+        .hero-section {
+            background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
+            color: white;
+            padding: 80px 0;
+            margin-bottom: 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,112C672,96,768,96,864,112C960,128,1056,160,1152,160C1248,160,1344,128,1392,112L1440,96L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Estilos mejorados para las cards */
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-img-top {
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .card:hover .card-img-top {
+            transform: scale(1.1);
+        }
+        
+        .card-title {
+            color: var(--secondary-color);
+            font-weight: 700;
+            font-size: 1.3rem;
+        }
+        
+        .card-text {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Estilos del formulario */
+        .form-section {
+            background: rgb(66, 136, 141);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(255, 20, 20, 0.1);
+            margin: 50px 0;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(255, 87, 51, 0.25);
+            transform: translateY(-2px);
+        }
+        
+        .form-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: 8px;
+        }
+        
+        /* Estilos del collapse */
+        .collapse-section {
+            margin: 40px 0;
+        }
+        
+        .collapse-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Footer personalizado */
+        footer {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #34495e 100%);
+            color: white;
+            padding: 40px 0;
+            margin-top: 80px;
+        }
+        
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+        
+        footer a:hover {
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        
+        /* Media Query personalizado */
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .navbar-brand {
+                font-size: 1.3rem;
+            }
+            
+            .card {
+                margin-bottom: 20px;
+            }
+            
+            .form-section {
+                padding: 25px;
+            }
+            
+            body {
+                background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            }
+        }
+        
+        /* Animación de carga */
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        
+        /* Badges personalizados */
+        .custom-badge {
+            background: linear-gradient(45deg, var(--primary-color), #c70039);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Navbar Responsiva -->
+    <nav class="navbar navbar-expand-md navbar-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">🚀 Mi Sitio Web</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#servicios">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contacto">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#sobre">Sobre Nosotros</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero-section" id="inicio">
+        <div class="container text-center">
+            <h1 class="display-3 mb-4">Bienvenido a Mi Sitio Bootstrap</h1>
+            <p class="lead mb-4">Diseño moderno, responsivo y con animaciones avanzadas en CSS3</p>
+            <span class="badge custom-badge">✨ Proyecto Académico</span>
+        </div>
+    </section>
+    
+    <!-- Sección de Cards con Grid -->
+    <section class="container mb-5" id="servicios">
+        <h2 class="text-center mb-5 fade-in" style="color: var(--secondary-color); font-weight: 700;">Nuestros Servicios</h2>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=500&h=300&fit=crop" class="card-img-top" alt="Desarrollo Web">
+                    <div class="card-body">
+                        <h3 class="card-title">💻 Desarrollo Web</h3>
+                        <p class="card-text">Creamos sitios web modernos y responsivos utilizando las últimas tecnologías como HTML5, CSS3, Bootstrap y JavaScript.</p>
+                        <a href="#contacto" class="btn btn-primary">Más Información</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=500&h=300&fit=crop" class="card-img-top" alt="Diseño UX/UI">
+                    <div class="card-body">
+                        <h3 class="card-title">🎨 Diseño UX/UI</h3>
+                        <p class="card-text">Diseñamos interfaces atractivas y funcionales centradas en la experiencia del usuario con herramientas profesionales.</p>
+                        <a href="#contacto" class="btn btn-primary">Más Información</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&h=300&fit=crop" class="card-img-top" alt="Marketing Digital">
+                    <div class="card-body">
+                        <h3 class="card-title">📊 Marketing Digital</h3>
+                        <p class="card-text">Estrategias efectivas de marketing digital para hacer crecer tu negocio en el mundo online y aumentar conversiones.</p>
+                        <a href="#contacto" class="btn btn-primary">Más Información</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Sección Collapse -->
+    <section class="container collapse-section">
+        <div class="text-center">
+            <button class="btn btn-primary btn-lg" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContent">
+                🔽 Descubre Más Información
+            </button>
+        </div>
+        
+        <div class="collapse" id="collapseContent">
+            <div class="collapse-content">
+                <h3>📚 Sobre Nuestro Proyecto</h3>
+                <p>Este sitio web ha sido desarrollado como parte de una actividad académica para demostrar el dominio de tecnologías web modernas. Incluye:</p>
+                <ul>
+                    <li>✅ Bootstrap 5 con sistema Grid y Flexbox</li>
+                    <li>✅ CSS3 avanzado con animaciones y transiciones</li>
+                    <li>✅ Diseño completamente responsivo</li>
+                    <li>✅ Componentes interactivos (navbar, cards, forms, collapse)</li>
+                    <li>✅ Personalización avanzada de estilos</li>
+                    <li>✅ Publicación en GitHub Pages</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Formulario de Contacto -->
+    <section class="container" id="contacto">
+        <div class="form-section">
+            <h2 class="text-center mb-4" style="color: var(--secondary-color); font-weight: 700;">📬 Formulario de Contacto</h2>
+            <p class="text-center text-muted mb-4">Déjanos tu mensaje y te contactaremos pronto</p>
+            
+            <form>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre Completo</label>
+                    <input type="text" class="form-control" id="nombre" placeholder="Ingresa tu nombre" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">Correo Electrónico</label>
+                    <input type="email" class="form-control" id="email" placeholder="tu@email.com" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="comentarios" class="form-label">Comentarios</label>
+                    <textarea class="form-control" id="comentarios" rows="5" placeholder="Escribe tu mensaje aquí..." required></textarea>
+                </div>
+                
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary btn-lg">Enviar Mensaje 📤</button>
+                </div>
+            </form>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="text-center" id="sobre">
+        <div class="container">
+            <h4 class="mb-3">🌟 Mi Sitio Web Profesional</h4>
+            <p>Desarrollado con Bootstrap 5 y CSS3 avanzado</p>
+            <div class="mt-3">
+                <a href="#" class="mx-3">Inicio</a>
+                <a href="#" class="mx-3">Servicios</a>
+                <a href="#" class="mx-3">Contacto</a>
+                <a href="#" class="mx-3">Política de Privacidad</a>
+            </div>
+            <p class="mt-4 mb-0">© 2025 Mi Sitio Bootstrap. Todos los derechos reservados.</p>
+            <p class="mt-2 text-muted">Proyecto Académico - Diseño Web Avanzado</p>
+            <p class="mt-1" style="color: var(--primary-color); font-weight: 600;">Desarrollado por Said Reyes</p>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Animación de scroll suave
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Animación al hacer scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

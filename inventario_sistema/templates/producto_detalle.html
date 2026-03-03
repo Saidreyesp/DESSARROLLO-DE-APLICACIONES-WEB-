@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Producto</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Gestión de Inventario</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/productos">Productos</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container" style="max-width: 600px; margin: 50px auto;">
+        <h2>Detalle del Producto</h2>
+        
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 5px;">
+            <p><strong>ID:</strong> {{ producto.id }}</p>
+            <p><strong>Nombre:</strong> {{ producto.nombre }}</p>
+            <p><strong>Cantidad:</strong> {{ producto.cantidad }} unidades</p>
+            <p><strong>Precio Unitario:</strong> ${{ "%.2f"|format(producto.precio) }}</p>
+            <p><strong>Valor Total:</strong> ${{ "%.2f"|format(producto.cantidad * producto.precio) }}</p>
+            <p><strong>Categoría:</strong> {{ producto.categoria or '-' }}</p>
+            <p><strong>Descripción:</strong> {{ producto.descripcion or '-' }}</p>
+            <p><strong>Fecha de Creación:</strong> {{ producto.fecha_creacion or '-' }}</p>
+            <p><strong>Última Actualización:</strong> {{ producto.fecha_actualizacion or '-' }}</p>
+
+            <div style="margin-top: 20px;">
+                <a href="/producto/editar/{{ producto.id }}" 
+                   style="padding: 10px 20px; background-color: #ffc107; color: black; border-radius: 4px; text-decoration: none;">
+                    Editar
+                </a>
+                <form method="POST" action="/producto/eliminar/{{ producto.id }}" style="display: inline;">
+                    <button type="submit" 
+                            style="padding: 10px 20px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;"
+                            onclick="return confirm('¿Eliminar este producto?');">
+                        Eliminar
+                    </button>
+                </form>
+                <a href="/productos" 
+                   style="margin-left: 10px; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none;">
+                    Volver
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Sistema de Inventario</p>
+    </footer>
+</body>
+</html>

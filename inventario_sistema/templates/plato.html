@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}{{ plato.nombre or nombre }} - Restaurante{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        {% if plato %}
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">🍽️ {{ plato.nombre }}</h2>
+                </div>
+                <div class="card-body">
+                    <p><strong>Categoría:</strong> <span class="badge bg-info">{{ plato.categoria or 'Sin especificar' }}</span></p>
+                    <p><strong>Precio:</strong> <span class="text-success" style="font-size: 1.5rem;">${{ "%.2f"|format(plato.precio) }}</span></p>
+                    <p><strong>Disponibles:</strong> <span class="badge bg-success">{{ plato.cantidad }} unidades</span></p>
+                    {% if plato.descripcion %}
+                    <p><strong>Descripción:</strong> {{ plato.descripcion }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer">
+                    <a href="/producto/editar/{{ plato.id }}" class="btn btn-warning">✏️ Editar Plato</a>
+                    <a href="/menu" class="btn btn-secondary">📋 Volver al Menú</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <h3>⚠️ Plato: {{ nombre }}</h3>
+                <p>No se encontró información del plato solicitado.</p>
+                <a href="/menu" class="btn btn-primary">Volver al Menú</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

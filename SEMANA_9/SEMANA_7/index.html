@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #7fd80a 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgb(211, 28, 28);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        #listaProductos {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        #listaProductos li {
+            background: #20e240;
+            border-left: 4px solid #df276d;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        #listaProductos li:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .producto-nombre {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .producto-precio {
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .producto-descripcion {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .btn-agregar {
+            background: linear-gradient(135deg, #da2aa5 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-agregar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(196, 212, 44, 0.4);
+        }
+
+        .btn-agregar:active {
+            transform: translateY(0);
+        }
+
+        .vacio {
+            text-align: center;
+            color: #db2e2e;
+            padding: 40px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Lista de Productos</h1>
+        <ul id="listaProductos"></ul>
+        <button id="btnAgregar" class="btn-agregar">➕ Agregar Nuevo Producto</button>
+    </div>
+
+    <script>
+        // Arreglo inicial de productos
+        const productos = [
+            {
+                nombre: "Laptop HP Pavilion",
+                precio: 899.99,
+                descripcion: "Laptop de alto rendimiento con procesador Intel Core i7, 16GB RAM y SSD de 512GB. Ideal para trabajo y entretenimiento."
+            },
+            {
+                nombre: "Mouse Inalámbrico Logitech",
+                precio: 29.99,
+                descripcion: "Mouse ergonómico inalámbrico con tecnología Bluetooth y batería de larga duración hasta 12 meses."
+            },
+            {
+                nombre: "Teclado Mecánico RGB",
+                precio: 79.99,
+                descripcion: "Teclado mecánico con switches blue, retroiluminación RGB personalizable y diseño compacto."
+            },
+            {
+                nombre: "Monitor 27 pulgadas",
+                precio: 249.99,
+                descripcion: "Monitor Full HD de 27 pulgadas con panel IPS, frecuencia de 75Hz y compatibilidad FreeSync."
+            }
+        ];
+
+        // Función para renderizar la lista de productos
+        function renderizarProductos() {
+            const lista = document.getElementById('listaProductos');
+            lista.innerHTML = '';
+
+            if (productos.length === 0) {
+                lista.innerHTML = '<li class="vacio">No hay productos en la lista</li>';
+                return;
+            }
+
+            productos.forEach((producto) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="producto-nombre">${producto.nombre}</div>
+                    <div class="producto-precio">$${producto.precio.toFixed(2)}</div>
+                    <div class="producto-descripcion">${producto.descripcion}</div>
+                `;
+                lista.appendChild(li);
+            });
+        }
+
+        // Función para agregar un nuevo producto
+        function agregarProducto() {
+            const nombresEjemplo = [
+                "Auriculares Bluetooth",
+                "Webcam HD 1080p",
+                "Disco Duro Externo 1TB",
+                "Hub USB-C 7 puertos",
+                "Alfombrilla Gaming XXL",
+                "Soporte para Laptop",
+                "Cable HDMI 2.0",
+                "Microfono USB Condensador"
+            ];
+
+            const descripciones = [
+                "Producto de alta calidad con excelentes características y durabilidad garantizada.",
+                "Diseño moderno y funcional para uso diario, perfecto para profesionales.",
+                "Tecnología avanzada que mejora tu productividad y experiencia de usuario.",
+                "Construcción resistente con materiales premium y acabado elegante.",
+                "Compatible con múltiples dispositivos y sistemas operativos.",
+                "Fácil instalación y configuración, listo para usar en minutos.",
+                "Garantía del fabricante y soporte técnico especializado incluido.",
+                "Excelente relación calidad-precio, ideal para cualquier presupuesto."
+            ];
+
+            const nombre = nombresEjemplo[Math.floor(Math.random() * nombresEjemplo.length)];
+            const precio = (Math.random() * 200 + 10).toFixed(2);
+            const descripcion = descripciones[Math.floor(Math.random() * descripciones.length)];
+
+            const nuevoProducto = {
+                nombre: nombre,
+                precio: parseFloat(precio),
+                descripcion: descripcion
+            };
+
+            productos.push(nuevoProducto);
+            renderizarProductos();
+        }
+
+        // Event listener para el botón
+        document.getElementById('btnAgregar').addEventListener('click', agregarProducto);
+
+        // Renderizar productos al cargar la página
+        renderizarProductos();
+    </script>
+</body>
+</html>

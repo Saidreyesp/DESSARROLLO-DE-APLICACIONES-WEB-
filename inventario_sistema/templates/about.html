@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Acerca de - Restaurante La Buena Mesa{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2>ℹ️ Acerca de Nosotros</h2>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h4>{{ negocio_name or 'Restaurante La Buena Mesa' }}</h4>
+                <p class="text-muted">Un lugar donde la tradición se encuentra con la innovación culinaria</p>
+                
+                <hr>
+                
+                <h5>Nuestra Misión</h5>
+                <p>Proporcionar experiencias gastronómicas excepcionales, combinando sabores auténticos con técnicas modernas, en un ambiente acogedor y servicio de calidad.</p>
+                
+                <h5>Nuestra Visión</h5>
+                <p>Ser reconocidos como el restaurante preferido de la región, donde cada cliente se siente como parte de nuestra familia.</p>
+                
+                <h5>Nuestros Valores</h5>
+                <ul>
+                    <li><strong>Calidad:</strong> Utilizamos ingredientes frescos y de la mejor calidad</li>
+                    <li><strong>Respeto:</strong> Valoramos a nuestros clientes y colaboradores</li>
+                    <li><strong>Innovación:</strong> Constantemente buscamos nuevas formas de mejorar</li>
+                    <li><strong>Sostenibilidad:</strong> Comprometidos con el medio ambiente</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📍 Ubicación</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Dirección:</strong> Calle Principal, 123</p>
+                        <p><strong>Ciudad:</strong> Tu Ciudad</p>
+                        <p><strong>Teléfono:</strong> (555) 123-4567</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">🕒 Horarios</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Lunes - Viernes:</strong> 12:00 PM - 10:00 PM</p>
+                        <p><strong>Sábado:</strong> 12:30 PM - 11:00 PM</p>
+                        <p><strong>Domingo:</strong> 12:30 PM - 9:00 PM</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="/reserva/Cliente" class="btn btn-success btn-lg">📅 Hacer una Reserva</a>
+            <a href="/menu" class="btn btn-primary btn-lg">📋 Ver Menú</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

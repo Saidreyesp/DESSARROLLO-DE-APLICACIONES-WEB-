@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Menú - Restaurante La Buena Mesa{% endblock %}
+
+{% block content %}
+<style>
+    .plato-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        height: 100%;
+    }
+    .plato-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    }
+    .plato-imagen {
+        height: 220px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .plato-body {
+        display: flex;
+        flex-direction: column;
+    }
+    .plato-titulo {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    .plato-categoria {
+        display: inline-block;
+        font-size: 0.75rem;
+        margin-bottom: 0.5rem;
+    }
+    .plato-descripcion {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+    .plato-precio {
+        font-size: 1.5rem;
+        color: #27ae60;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    .plato-stock {
+        font-size: 0.85rem;
+        color: #e74c3c;
+        margin-bottom: 1rem;
+    }
+    .botones-accion {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .botones-accion .btn {
+        flex: 1;
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+    }
+    .header-menu {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+        border-radius: 8px;
+    }
+    .header-menu h2 {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+    .header-menu p {
+        margin: 0.5rem 0 0 0;
+        opacity: 0.9;
+    }
+    .vacio-menaje {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+    }
+    .vacio-menaje .alert-info {
+        background-color: #d6eef8;
+        border-color: #67a8d0;
+        color: #1b5e75;
+    }
+</style>
+
+<div class="header-menu">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h2>🍽️ Menú de Platos</h2>
+            <p>Deléitate con nuestros platos tradicionales ecuatorianos</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="/producto/nuevo" class="btn btn-light btn-lg">➕ Nuevo Plato</a>
+        </div>
+    </div>
+</div>
+
+{% if productos %}
+<div class="row g-4">
+    {% for p in productos %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card plato-card">
+            {% if p.imagen %}
+            <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="card-img-top plato-imagen" onerror="this.src='https://via.placeholder.com/400x220?text={{ p.nombre | urlencode }}'">
+            {% else %}
+            <div class="plato-imagen d-flex align-items-center justify-content-center text-white">
+                <span style="font-size: 3rem;">🍖</span>
+            </div>
+            {% endif %}
+            
+            <div class="card-body plato-body">
+                <div class="plato-titulo">{{ p.nombre }}</div>
+                
+                {% if p.categoria %}
+                <span class="badge bg-info plato-categoria">🏷️ {{ p.categoria }}</span>
+                {% endif %}
+                
+                {% if p.descripcion %}
+                <p class="plato-descripcion">{{ p.descripcion }}</p>
+                {% endif %}
+                
+                <div class="plato-precio">${{ "%.2f"|format(p.precio) }}</div>
+                
+                <div class="plato-stock">
+                    {% if p.cantidad > 0 %}
+                    <span class="text-success">✓ Stock: {{ p.cantidad }} unidades</span>
+                    {% else %}
+                    <span class="text-danger">✗ Sin stock</span>
+                    {% endif %}
+                </div>
+                
+                <div class="botones-accion">
+                    <a href="/plato/{{ p.nombre }}" class="btn btn-sm btn-primary">👁️ Ver</a>
+                    <a href="/producto/editar/{{ p.id }}" class="btn btn-sm btn-warning">✏️ Editar</a>
+                    <form method="POST" action="/producto/eliminar/{{ p.id }}" style="flex: 1;">
+                        <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('¿Eliminar este plato?')">🗑️ Borrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info vacio-menaje" style="font-size: 1.1rem;">
+    <h4 class="alert-heading">📋 Menú Vacío</h4>
+    <p>No hay platos en el menú aún.</p>
+    <hr>
+    <a href="/producto/nuevo" class="btn btn-primary btn-lg">➕ Agregar el Primer Plato</a>
+</div>
+{% endif %}
+
+{% endblock %}
