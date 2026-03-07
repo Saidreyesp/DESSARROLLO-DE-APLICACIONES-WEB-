@@ -5,30 +5,112 @@
 {% block content %}
 <div class="row">
     <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h2 class="mb-0">📅 Reserva para {{ cliente }}</h2>
+        <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white text-center">
+                <h2 class="mb-0">📅 Reserva para {{ cliente or '' }}</h2>
             </div>
             <div class="card-body">
-                <div class="alert alert-success">
-                    <h5>{{ mensaje }}</h5>
-                </div>
-                <p class="lead">Gracias por elegir <strong>{{ negocio_name or 'Restaurante La Buena Mesa' }}</strong>. Te contactaremos pronto para confirmar tu reserva.</p>
-                
-                <div class="mt-4">
-                    <h5>Próximos pasos:</h5>
-                    <ol>
-                        <li>Recibirás una confirmación por correo electrónico</li>
-                        <li>Nuestro equipo te contactará para detalles finales</li>
-                        <li>¡Prepárate para una experiencia gastronómica inolvidable!</li>
-                    </ol>
-                </div>
+                {% if mensaje %}
+                    <div class="alert alert-success">
+                        <h5>{{ mensaje }}</h5>
+                    </div>
+                {% else %}
+                    <p class="lead text-center">Por favor, ingresa los datos para realizar tu reserva en <strong>{{ negocio_name or 'Restaurante La Buena Mesa' }}</strong>.</p>
+                    
+                    <!-- Formulario de reserva -->
+                    <form method="POST" action="/reserva/confirmar">
+                        <!-- Nombre completo del cliente -->
+                        <div class="mb-3">
+                            <label for="cliente" class="form-label">Nombre Completo:</label>
+                            <input type="text" class="form-control form-control-lg" id="cliente" name="cliente" value="{{ cliente }}" required>
+                        </div>
+
+                        <!-- Número de personas -->
+                        <div class="mb-3">
+                            <label for="personas" class="form-label">Número de Personas:</label>
+                            <input type="number" class="form-control form-control-lg" id="personas" name="personas" min="1" required>
+                        </div>
+
+                        <!-- Fecha y hora de la reserva -->
+                        <div class="mb-3">
+                            <label for="fecha_reserva" class="form-label">Fecha y Hora de Reserva:</label>
+                            <input type="datetime-local" class="form-control form-control-lg" id="fecha_reserva" name="fecha_reserva" required>
+                        </div>
+
+                        <!-- Teléfono de contacto -->
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono de Contacto:</label>
+                            <input type="tel" class="form-control form-control-lg" id="telefono" name="telefono" required>
+                        </div>
+
+                        <!-- Correo electrónico -->
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico:</label>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+                        </div>
+
+                        <!-- Botón de confirmación -->
+                        <button type="submit" class="btn btn-lg btn-purple w-100">Confirmar Reserva</button>
+                    </form>
+                {% endif %}
             </div>
-            <div class="card-footer">
-                <a href="/menu" class="btn btn-primary">📋 Ver Menú</a>
-                <a href="/" class="btn btn-secondary">🏠 Volver al Inicio</a>
+            <div class="card-footer text-center">
+                <a href="/menu" class="btn btn-outline-primary btn-lg">📋 Ver Menú</a>
+                <a href="/" class="btn btn-outline-secondary btn-lg">🏠 Volver al Inicio</a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilos personalizados para el formulario */
+    .form-control {
+        border-radius: 10px;
+        font-size: 1.1rem;
+        padding: 1rem;
+    }
+
+    .btn-purple {
+        background-color: #6a1b9a; /* Morado oscuro */
+        color: white;
+        border: none;
+    }
+
+    .btn-purple:hover {
+        background-color: #9c4dcc; /* Morado claro */
+        border: none;
+    }
+
+    .btn-outline-primary {
+        color: #4e73df;
+        border-color: #4e73df;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #4e73df;
+        color: white;
+    }
+
+    .card {
+        border-radius: 10px;
+        border: none;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #6a1b9a 0%, #9c4dcc 100%);
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    }
+
+    .card-footer {
+        background-color: #f8f9fc;
+    }
+
+    .alert-success {
+        background-color: #d1c4e9;
+        color: #4527a0;
+        border-radius: 10px;
+    }
+</style>
 {% endblock %}

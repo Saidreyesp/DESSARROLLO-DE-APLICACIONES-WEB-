@@ -42,6 +42,12 @@ class ConexionSQLite:
                 descripcion TEXT
             )''')
 
+            # Migracion ligera para bases antiguas que no tienen el campo imagen.
+            self.cursor.execute("PRAGMA table_info(productos)")
+            columnas = {row[1] for row in self.cursor.fetchall()}
+            if 'imagen' not in columnas:
+                self.cursor.execute('ALTER TABLE productos ADD COLUMN imagen TEXT')
+
             self.conn.commit()
         except sqlite3.Error as e:
             print(f"Error al crear tablas: {e}")

@@ -3,49 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Restaurante La Buena Mesa{% endblock %}</title>
+    <title>{% block title %}{{ negocio_name or 'COMEDOR ALEXANDRA' }}{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Lora:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <style>
+        :root {
+            --bg-main: #121212;
+            --bg-section: #1E1E1E;
+            --gold: #C9A227;
+            --bone: #F5F1E8;
+            --wine: #6A1E2D;
+            --glass: rgba(245, 241, 232, 0.12);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; }
-        body { display: flex; flex-direction: column; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body {
+            display: flex;
+            flex-direction: column;
+            font-family: 'Lora', Georgia, 'Times New Roman', serif;
+            background: var(--bg-main);
+            color: var(--bone);
+        }
         main { flex: 1; padding: 20px 0; }
-        header { background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%); color: white; padding: 20px 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        header h1 { margin: 0; font-size: 2.5rem; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
-        nav { background-color: #333; margin-top: 10px; }
-        nav ul { display: flex; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; }
+        header { background: linear-gradient(135deg, var(--bg-section) 0%, #2a2a2a 100%); color: var(--bone); padding: 20px 0; border-bottom: 2px solid var(--gold); box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4); }
+        header h1 {
+            margin: 0;
+            font-size: 2.7rem;
+            text-align: center;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            letter-spacing: 0.5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .brand-logo { width: 86px; height: 86px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.6); background: #fff; object-fit: cover; }
+        .brand-hours { background: rgba(106, 30, 45, 0.55); border: 1px solid var(--gold); border-radius: 8px; display: inline-block; padding: 6px 12px; margin-top: 8px; font-weight: 600; }
+        nav { background: var(--bg-section); margin-top: 10px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35); border-top: 1px solid #2f2f2f; border-bottom: 1px solid #2f2f2f; }
+        nav ul { display: flex; list-style: none; margin: 0; padding: 0; flex-wrap: wrap; justify-content: center; }
         nav li { margin: 0; }
-        nav a { display: block; color: white; text-decoration: none; padding: 12px 18px; transition: background 0.3s; }
-        nav a:hover { background-color: #D2691E; }
-        footer { background-color: #333; color: white; text-align: center; padding: 15px; margin-top: 40px; }
+        nav a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            transition: background 0.3s, transform 0.25s;
+            border-radius: 999px;
+            margin: 6px 4px;
+            font-weight: 600;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.15rem;
+        }
+        nav a:hover { background-color: var(--wine); transform: translateY(-1px); }
+        footer { background: var(--bg-section); color: var(--bone); text-align: center; padding: 15px; margin-top: 40px; border-top: 2px solid var(--gold); }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .btn-primary { background-color: #8B4513; border-color: #8B4513; }
-        .btn-primary:hover { background-color: #D2691E; border-color: #D2691E; }
-        .btn-success { background-color: #28a745; }
-        .btn-success:hover { background-color: #218838; }
+        .btn-primary { background-color: var(--gold); border-color: var(--gold); color: #121212; font-weight: 700; }
+        .btn-primary:hover { background-color: var(--wine); border-color: var(--wine); color: var(--bone); }
+        .btn-success { background-color: var(--gold); border-color: var(--gold); color: #121212; font-weight: 700; }
+        .btn-success:hover { background-color: var(--wine); border-color: var(--wine); color: var(--bone); }
+        .btn-secondary { background-color: var(--bg-section); border-color: var(--gold); color: var(--bone); }
+        .btn-secondary:hover { background-color: var(--wine); border-color: var(--wine); color: var(--bone); }
+        .btn-danger { background-color: var(--wine); border-color: var(--wine); }
+        .btn-danger:hover { background-color: #4f1622; border-color: #4f1622; }
+        .card { background: var(--bg-section); color: var(--bone); border: 1px solid #2f2f2f; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35); border-radius: 16px; }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+    <!-- Header con el nombre del restaurante -->
     <header>
         <div class="container text-center">
-            <h1 class="display-4 mb-1">{{ negocio_name or 'Restaurante La Buena Mesa' }}</h1>
-            <p class="lead mb-2">Ciudad: <strong>Quevedo</strong></p>
+            <img class="brand-logo mb-2" src="{{ url_for('static', filename=negocio_logo or 'logo-comedor-alexandra.svg') }}" alt="Logo {{ negocio_name or 'COMEDOR ALEXANDRA' }}">
+            <h1 class="display-4 mb-1">{{ negocio_name or 'COMEDOR ALEXANDRA' }}</h1>
+            <p class="brand-hours">Horario: {{ negocio_hours or 'Viernes, Sabado, Domingo y feriados: 2:00 PM a 5:00 AM' }}</p>
             <p style="font-size:1rem; opacity:0.85;">Sabores auténticos que te transportan al corazón de la costa ecuatoriana.</p>
         </div>
-        <nav>
-            <ul>
-                <li><a href="/">🏠 Inicio</a></li>
-                <li><a href="/menu">📋 Menú</a></li>
-                <li><a href="/producto/nuevo">➕ Nuevo Plato</a></li>
-                <li><a href="/buscar">🔍 Buscar</a></li>
-                <li><a href="/reserva/Cliente">📅 Reservas</a></li>
-                <li><a href="/about">ℹ️ Acerca de</a></li>
-            </ul>
-        </nav>
     </header>
 
+    <!-- Barra de navegación -->
+    <nav>
+        <ul>
+            <li><a href="/">🏠 Inicio</a></li>
+            <li><a href="/menu">📋 Menú</a></li>
+            <li><a href="/buscar">🔍 Buscar</a></li>
+            <li><a href="/reserva/Cliente">📅 Reservas</a></li>
+            <li><a href="/about">📞 Contactanos</a></li>
+            <li><a href="/trabaja-con-nosotros">💼 Trabaja con Nosotros</a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenido Principal -->
     <main>
         <div class="container">
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -59,16 +107,17 @@
                 {% endif %}
             {% endwith %}
             
-            {% block content %}
-            {% endblock %}
+            {% block content %}{% endblock %}
         </div>
     </main>
 
+    <!-- Footer con derechos de autor -->
     <footer>
-        <p>&copy; 2026 {{ negocio_name or 'Restaurante La Buena Mesa' }} - Sistema de Gestión</p>
-        <p><small>Desarrollado con Flask y Jinja2</small></p>
+        <p>&copy; 2026 {{ negocio_name or 'COMEDOR ALEXANDRA' }} - Sistema de Gestion</p>
+        <p><small>{{ negocio_hours or 'Viernes, Sabado, Domingo y feriados: 2:00 PM a 5:00 AM' }}</small></p>
     </footer>
 
+    <!-- Script de Bootstrap para funcionalidad adicional -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>

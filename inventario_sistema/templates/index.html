@@ -1,73 +1,176 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio - Restaurante La Buena Mesa{% endblock %}
+{% block title %}Inicio - {{ negocio_name }}{% endblock %}
 
 {% block content %}
-<!-- Hero banner -->
-<div class="row bg-image text-white" style="background: url('https://source.unsplash.com/1600x900/?restaurant,food') center/cover no-repeat;">
-    <div class="col-md-12 py-5" style="background: rgba(0,0,0,0.4);">
-        <h2 class="display-5 fw-bold">¡Bienvenidos a {{ negocio_name or 'Nuestro Restaurante' }} en Quevedo!</h2>
-        <p class="lead">Disfruta de platos tradicionales con la esencia de nuestra ciudad: frescura, sazón y cariño.</p>
-        <a href="/menu" class="btn btn-primary btn-lg mt-3">🍽️ Descubrir Nuestro Menú</a>
+<style>
+    .splash-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background: radial-gradient(circle at center, #1E1E1E 0%, #121212 70%);
+        color: #F5F1E8;
+        transition: opacity 0.6s ease;
+    }
+    .splash-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+    .splash-logo {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 2px solid #C9A227;
+        background: #fff;
+        object-fit: cover;
+        box-shadow: 0 0 22px rgba(201, 162, 39, 0.45);
+        animation: logoPulse 1.4s ease-in-out infinite;
+    }
+    .splash-title {
+        margin-top: 14px;
+        color: #C9A227;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 2rem;
+        letter-spacing: 0.6px;
+    }
+    @keyframes logoPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.06); }
+    }
+    .home-content {
+        opacity: 0;
+        transform: translateY(6px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .home-content.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .hero-restaurant {
+        border-radius: 20px;
+        overflow: hidden;
+        background: linear-gradient(rgba(18, 18, 18, 0.72), rgba(106, 30, 45, 0.55)),
+                    url('https://source.unsplash.com/1600x900/?restaurant,dinner,chef') center/cover no-repeat;
+        box-shadow: 0 18px 36px rgba(0, 0, 0, 0.4);
+    }
+    .hero-content {
+        padding: 5rem 2rem;
+        color: #fff;
+    }
+    .hero-content h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.6rem;
+        margin-bottom: 0.8rem;
+        text-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    }
+    .hero-content p {
+        max-width: 760px;
+        font-size: 1.1rem;
+    }
+    .quick-stats .card-title {
+        color: #C9A227;
+        font-weight: 700;
+    }
+    .about-box {
+        background: #1E1E1E;
+        border: 1px solid #2f2f2f;
+        border-radius: 18px;
+        padding: 1.6rem;
+        color: #F5F1E8;
+    }
+    .quick-stats .display-4 { color: #C9A227 !important; }
+    .impact-banner {
+        margin-top: 2rem;
+        border-radius: 18px;
+        border: 1px solid #C9A227;
+        background: linear-gradient(120deg, #6A1E2D 0%, #121212 55%, #1E1E1E 100%);
+        color: #F5F1E8;
+        padding: 2rem 1.5rem;
+        box-shadow: 0 16px 34px rgba(0, 0, 0, 0.35);
+    }
+    .impact-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        color: #C9A227;
+        margin-bottom: 0.7rem;
+    }
+    .impact-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+        margin-top: 1rem;
+    }
+    .impact-chip {
+        border: 1px solid rgba(201, 162, 39, 0.45);
+        border-radius: 12px;
+        padding: 0.8rem;
+        text-align: center;
+        background: rgba(245, 241, 232, 0.06);
+        font-weight: 700;
+    }
+</style>
+
+<div id="splash-screen" class="splash-screen">
+    <img class="splash-logo" src="{{ url_for('static', filename=negocio_logo or 'logo-comedor-alexandra.svg') }}" alt="Logo {{ negocio_name }}">
+    <h2 class="splash-title">{{ negocio_name }}</h2>
+</div>
+
+<div id="home-content" class="home-content">
+<div class="hero-restaurant">
+    <div class="hero-content">
+        <h2>Bienvenidos a {{ negocio_name }}</h2>
+        <p>Vive una experiencia nocturna con sazón ecuatoriana, platos calientes y ambiente familiar para compartir en cada visita.</p>
+        <a href="/menu" class="btn btn-primary btn-lg mt-3">Descubrir nuestro menu</a>
     </div>
 </div>
 
 <div class="row mt-4">
     <div class="col-md-12">
-        <h3 class="mt-4">Sobre Nosotros</h3>
-        <p class="lead">En Quevedo, nos apasiona brindarte experiencias culinarias inolvidables. Cada plato está preparado con ingredientes frescos y amor por la gastronomía ecuatoriana.</p>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Total de Platos</h5>
-                <p class="display-4 text-primary">{{ total }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Valor Total del Catálogo</h5>
-                <p class="display-4 text-success">${{ "%.2f"|format(valor) }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Platos con Bajo Stock</h5>
-                <p class="display-4 text-warning">{{ bajo_stock|length }}</p>
-            </div>
+        <div class="about-box">
+            <h3 class="mt-1" style="font-family:'Playfair Display', serif;">Una mesa con sabor casero</h3>
+            <p class="lead mb-0">Cocinamos como en casa: ingredientes frescos, recetas tradicionales y servicio cercano para que cada plato se sienta especial.</p>
         </div>
     </div>
 </div>
 
-{% if bajo_stock %}
-<div class="row mt-5">
-    <div class="col-md-12">
-        <div class="alert alert-warning">
-            <h4>⚠️ Platos con Bajo Stock (< 5 unidades)</h4>
-            <ul class="mb-0">
-                {% for p in bajo_stock %}
-                <li><strong>{{ p.nombre }}</strong> - Cantidad: {{ p.cantidad }} - 
-                    <a href="/plato/{{ p.nombre }}" class="btn btn-sm btn-info">Ver</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+<div class="impact-banner">
+    <div class="impact-title">Una Noche de Sabor que No se Olvida</div>
+    <p class="mb-2">Platos tradicionales bien servidos, sazón costeña real y atención cercana. Aquí no solo comes, vives una experiencia.</p>
+    <div class="impact-grid">
+        <div class="impact-chip">Asados al punto</div>
+        <div class="impact-chip">Caldos bien cargados</div>
+        <div class="impact-chip">Secos tradicionales</div>
+        <div class="impact-chip">Atención rápida</div>
     </div>
 </div>
-{% endif %}
 
 <div class="row mt-5">
     <div class="col-md-12">
-        <a href="/menu" class="btn btn-primary btn-lg">📋 Ver Menú Completo</a>
-        <a href="/producto/nuevo" class="btn btn-success btn-lg">➕ Añadir Nuevo Plato</a>
-        <a href="/reportes" class="btn btn-secondary btn-lg">📊 Ver Reportes</a>
+        <a href="/menu" class="btn btn-primary btn-lg">Ver menu completo</a>
+        <a href="/reserva/Cliente" class="btn btn-success btn-lg">Reservar ahora</a>
+        <a href="/about" class="btn btn-secondary btn-lg">Contactanos</a>
     </div>
 </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var splash = document.getElementById('splash-screen');
+    var content = document.getElementById('home-content');
+
+    setTimeout(function () {
+        splash.classList.add('hidden');
+        content.classList.add('show');
+        setTimeout(function () {
+            if (splash && splash.parentNode) {
+                splash.parentNode.removeChild(splash);
+            }
+        }, 650);
+    }, 1500);
+});
+</script>
 {% endblock %}
