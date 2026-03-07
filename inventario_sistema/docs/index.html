@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante La Buena Mesa - Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hero {
+            background: linear-gradient(135deg, #65138b 0%, #b92580 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .btn-custom {
+            background: linear-gradient(135deg, #65138b 0%, #d32f2f 100%);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 30px;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #d32f2f 0%, #00bcd4 100%);
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="container">
+            <h1 class="display-4">🍽️ Restaurante La Buena Mesa</h1>
+            <p class="lead">Sistema de Gestión de Inventario - Demo Interactiva</p>
+            <p>Sabores auténticos que te transportan al corazón de la costa ecuatoriana</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">🏠 Dashboard</h5>
+                        <p class="card-text">Vista general del restaurante con estadísticas y resumen</p>
+                        <a href="dashboard.html" class="btn-custom">Ver Dashboard</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">📋 Menú</h5>
+                        <p class="card-text">Catálogo completo de platos disponibles</p>
+                        <a href="menu.html" class="btn-custom">Ver Menú</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">➕ Nuevo Plato</h5>
+                        <p class="card-text">Formulario para agregar nuevos platos al menú</p>
+                        <a href="nuevo-plato.html" class="btn-custom">Agregar Plato</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">🔍 Buscar</h5>
+                        <p class="card-text">Busca platos por nombre o descripción</p>
+                        <a href="buscar.html" class="btn-custom">Buscar Platos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">📅 Reservas</h5>
+                        <p class="card-text">Sistema de reservas con formulario completo</p>
+                        <a href="reservas.html" class="btn-custom">Hacer Reserva</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">ℹ️ Acerca de</h5>
+                        <p class="card-text">Información sobre el restaurante</p>
+                        <a href="acerca.html" class="btn-custom">Conócenos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <div class="card">
+                    <div class="card-body">
+                        <h4>🎓 Proyecto de Desarrollo Web</h4>
+                        <p class="mb-3">Sistema completo desarrollado con Flask, SQLAlchemy, Bootstrap y Programación Orientada a Objetos</p>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h6>✅ Características</h6>
+                                <ul class="list-unstyled">
+                                    <li>🔹 Plantillas Jinja2</li>
+                                    <li>🔹 Base de datos SQLite</li>
+                                    <li>🔹 POO completa</li>
+                                    <li>🔹 Colecciones Python</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>🛠️ Tecnologías</h6>
+                                <ul class="list-unstyled">
+                                    <li>🔹 Flask Framework</li>
+                                    <li>🔹 Bootstrap 5</li>
+                                    <li>🔹 SQLAlchemy ORM</li>
+                                    <li>🔹 Git & GitHub</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>📁 Enlaces</h6>
+                                <ul class="list-unstyled">
+                                    <li><a href="https://github.com/Saidreyesp/DESSARROLLO-DE-APLICACIONES-WEB-" target="_blank">📦 Código en GitHub</a></li>
+                                    <li><a href="https://github.com/Saidreyesp/DESSARROLLO-DE-APLICACIONES-WEB-/tree/main/inventario_sistema" target="_blank">📂 Proyecto Completo</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-md-3">
+                                <h6>🚀 Despliegue</h6>
+                                <ul class="list-unstyled">
+                                    <li>🔹 Render (Recomendado)</li>
+                                    <li>🔹 Heroku</li>
+                                    <li>🔹 Vercel</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 Restaurante La Buena Mesa - Sistema de Gestión de Inventario</p>
+            <p class="mb-0">Desarrollado para el curso de Desarrollo de Aplicaciones Web</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

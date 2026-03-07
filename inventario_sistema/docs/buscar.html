@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar - Restaurante La Buena Mesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%); }
+        .hero { background: linear-gradient(135deg, #65138b 0%, #b92580 100%); color: white; padding: 40px 0; text-align: center; }
+        .search-box { margin: 20px 0; }
+        .search-box input { padding: 10px; width: 80%; font-size: 16px; border: 2px solid #65138b; border-radius: 6px; }
+        .search-box input:focus { border-color: #d32f2f; box-shadow: 0 0 8px rgba(211,47,47,0.3); }
+        .search-box button { padding: 10px 20px; background: linear-gradient(135deg, #65138b 0%, #00bcd4 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .search-box button:hover { background: linear-gradient(135deg, #d32f2f 0%, #65138b 100%); }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: linear-gradient(135deg, #d32f2f 0%, #00bcd4 100%); color: white; }
+        tr:hover { background-color: #fce4ec; }
+        .nav-link { color: white !important; margin: 0 10px; }
+        .nav-link:hover { color: #00bcd4 !important; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="container">
+            <h1>🔍 Buscar Platos</h1>
+            <p>Encuentra el plato perfecto para tu gusto</p>
+            <nav class="mt-3">
+                <a href="index.html" class="nav-link">Inicio</a> |
+                <a href="dashboard.html" class="nav-link">Dashboard</a> |
+                <a href="menu.html" class="nav-link">Menú</a> |
+                <a href="reservas.html" class="nav-link">Reservas</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Buscar Producto</h2>
+
+        <form method="GET" class="search-box">
+            <input type="text" name="termino" placeholder="Ingrese nombre o descripción..." value="ceviche">
+            <button type="submit">Buscar</button>
+        </form>
+
+        <h3>Resultados para: "ceviche"</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Ceviche de Camarón</td>
+                    <td>8</td>
+                    <td>$12.50</td>
+                    <td>Mariscos</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">Ver</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Ceviche Mixto</td>
+                    <td>5</td>
+                    <td>$14.00</td>
+                    <td>Mariscos</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">Ver</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Ceviche de Pescado</td>
+                    <td>12</td>
+                    <td>$11.00</td>
+                    <td>Mariscos</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary">Ver</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

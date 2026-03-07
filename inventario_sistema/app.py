@@ -17,15 +17,15 @@ with app.app_context():
     # si no hay platos en la base, añadimos algunos ejemplos para comenzar
     if not db_conexion.obtener_todos_productos():
         ejemplos = [
-            ("Seco de Pollo", 10, 8.50, "Sopas", "Delicioso pollo guisado con arroz"),
-            ("Encebollado", 15, 6.75, "Pescados", "Sopa de pescado con yuca y cebolla"),
-            ("Ceviche de Camarón", 20, 9.00, "Mariscos", "Camarones frescos en jugo cítrico"),
-            ("Asado de Ternasco", 12, 11.00, "Carnes", "Lomitos de ternasco acompañados de papas"),
-            ("Hornado", 8, 10.00, "Carnes", "Cerdo asado con mote y llapingachos"),
-            ("Asados Mixtos", 7, 12.50, "Carnes", "Variedad de carnes asadas al estilo Quevedo"),
+            ("Seco de Pollo", 10, 8.50, "Sopas", "Delicioso pollo guisado con arroz", "https://img-global.cpcdn.com/recipes/e14383d77a2e65b3/751x532cq70/seco-de-pollo-receta-tradicional-ecuatoriana-foto-principal.jpg"),
+            ("Encebollado", 15, 6.75, "Pescados", "Sopa de pescado con yuca y cebolla", "https://img.goraymi.com/2019/01/24/4acc0a98e6ce5f4fbdd7d6b602fcf436_xl.jpg"),
+            ("Ceviche de Camarón", 20, 9.00, "Mariscos", "Camarones frescos en jugo cítrico", "https://costacrab.com.ec/wp-content/uploads/2019/03/Ceviche_Simple_CostaCrab.jpg"),
+            ("Asado de Ternasco", 12, 11.00, "Carnes", "Lomitos de ternasco acompañados de papas", "https://www.ternascodearagon.es/wp-content/uploads/2023/03/mejor-ternasco-asado-2024-tw.jpg"),
+            ("Hornado", 8, 10.00, "Carnes", "Cerdo asado con mote y llapingachos", "https://tse1.mm.bing.net/th/id/OIP.RSkhAEuLiRIPS3pmcFwE9QHaE7?rs=1&pid=ImgDetMain&o=7&rm=3"),
+            ("Asados Mixtos", 7, 12.50, "Carnes", "Variedad de carnes asadas al estilo Quevedo", "https://cdn0.bodas.net/article-vendor/2663/3_2/960/jpg/nh-eurobuilding-1713_1_2663-1563622781.webp"),
         ]
-        for nombre,cantidad,precio,categoria,descripcion in ejemplos:
-            db_conexion.añadir_producto(nombre,cantidad,precio,categoria,descripcion)
+        for nombre,cantidad,precio,categoria,descripcion,imagen in ejemplos:
+            db_conexion.añadir_producto(nombre,cantidad,precio,categoria,descripcion,imagen)
 
 @app.route('/')
 def index():
@@ -68,8 +68,9 @@ def nuevo_producto():
         precio = float(request.form.get('precio', 0))
         categoria = request.form.get('categoria')
         descripcion = request.form.get('descripcion')
+        imagen = request.form.get('imagen')
         
-        id_nuevo = db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion)
+        id_nuevo = db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion, imagen)
         
         if id_nuevo > 0:
             record = {'id': id_nuevo, 'nombre': nombre, 'cantidad': cantidad, 'precio': precio}
@@ -97,8 +98,9 @@ def editar_producto(id):
         precio = float(request.form.get('precio', 0))
         categoria = request.form.get('categoria')
         descripcion = request.form.get('descripcion')
+        imagen = request.form.get('imagen')
         
-        if db_conexion.actualizar_producto(id, nombre, cantidad, precio, categoria, descripcion):
+        if db_conexion.actualizar_producto(id, nombre, cantidad, precio, categoria, descripcion, imagen):
             flash(f'Producto actualizado exitosamente.', 'success')
             return redirect(url_for('ver_producto', id=id))
         else:

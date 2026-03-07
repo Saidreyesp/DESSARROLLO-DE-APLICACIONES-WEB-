@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - Restaurante La Buena Mesa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%); }
+        .hero { background: linear-gradient(135deg, #65138b 0%, #d32f2f 50%, #00bcd4 100%); color: white; padding: 40px 0; text-align: center; }
+        .reserva-form .form-control { border-radius: 8px; border: 2px solid #ddd; padding: 10px 15px; }
+        .reserva-form .form-control:focus { border-color: #65138b; box-shadow: 0 0 8px rgba(101,19,139,0.3); }
+        .reserva-form .btn-success { background: linear-gradient(135deg, #65138b 0%, #d32f2f 100%); border: none; border-radius: 8px; padding: 12px 30px; color: white; }
+        .reserva-form .btn-success:hover { background: linear-gradient(135deg, #d32f2f 0%, #00bcd4 100%); }
+        .info-restaurante { background: linear-gradient(135deg, #fce4ec 0%, #e0f7fa 100%); padding: 20px; border-radius: 10px; border-left: 4px solid #65138b; }
+        .card-header { background: linear-gradient(135deg, #65138b 0%, #d32f2f 100%) !important; color: white !important; }
+        .nav-link { color: white !important; margin: 0 10px; }
+        .nav-link:hover { color: #00bcd4 !important; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="container">
+            <h1>📅 Hacer una Reserva</h1>
+            <p>Disfruta de una experiencia gastronómica inolvidable</p>
+            <nav class="mt-3">
+                <a href="index.html" class="nav-link">Inicio</a> |
+                <a href="dashboard.html" class="nav-link">Dashboard</a> |
+                <a href="menu.html" class="nav-link">Menú</a> |
+                <a href="buscar.html" class="nav-link">Buscar</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card">
+                    <div class="card-header text-center">
+                        <h2 class="mb-0">📅 Reserva tu Mesa</h2>
+                        <p class="mb-0 mt-2">Disfruta de una experiencia gastronómica inolvidable</p>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-restaurante">
+                                    <h4 class="text-primary mb-3">🍽️ Información del Restaurante</h4>
+                                    <div class="mb-3">
+                                        <strong>📍 Dirección:</strong><br>
+                                        Calle Principal 123, Centro Histórico
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>📞 Teléfono:</strong><br>
+                                        +593 9 1234 5678
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>🕐 Horarios:</strong><br>
+                                        Lunes - Domingo: 12:00 - 22:00
+                                    </div>
+                                    <div class="mb-3">
+                                        <strong>👥 Capacidad:</strong><br>
+                                        Hasta 50 personas por reserva
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="text-success mb-3">📝 Datos de la Reserva</h4>
+                                <form class="reserva-form">
+                                    <div class="mb-3">
+                                        <label for="nombre" class="form-label fw-bold">👤 Nombre Completo</label>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="email" class="form-label fw-bold">📧 Correo Electrónico</label>
+                                        <input type="email" class="form-control" id="email" name="email" required placeholder="tu@email.com">
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="telefono" class="form-label fw-bold">📱 Teléfono</label>
+                                        <input type="tel" class="form-control" id="telefono" name="telefono" required placeholder="+593 9 1234 5678">
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label for="fecha" class="form-label fw-bold">📅 Fecha</label>
+                                            <input type="date" class="form-control" id="fecha" name="fecha" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label for="hora" class="form-label fw-bold">⏰ Hora</label>
+                                            <select class="form-control" id="hora" name="hora" required>
+                                                <option value="">Seleccionar hora</option>
+                                                <option value="12:00">12:00</option>
+                                                <option value="13:00">13:00</option>
+                                                <option value="14:00">14:00</option>
+                                                <option value="15:00">15:00</option>
+                                                <option value="18:00">18:00</option>
+                                                <option value="19:00">19:00</option>
+                                                <option value="20:00">20:00</option>
+                                                <option value="21:00">21:00</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="personas" class="form-label fw-bold">👥 Número de Personas</label>
+                                        <select class="form-control" id="personas" name="personas" required>
+                                            <option value="">Seleccionar cantidad</option>
+                                            <option value="1">1 persona</option>
+                                            <option value="2">2 personas</option>
+                                            <option value="3">3 personas</option>
+                                            <option value="4">4 personas</option>
+                                            <option value="5">5 personas</option>
+                                            <option value="6">6 personas</option>
+                                            <option value="7">7+ personas (llamar para confirmar)</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label for="mensaje" class="form-label fw-bold">💬 Mensaje Adicional (Opcional)</label>
+                                        <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Alergias, preferencias especiales, ocasión especial..."></textarea>
+                                    </div>
+
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success btn-lg">
+                                            <i class="fas fa-calendar-check"></i> Confirmar Reserva
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center bg-light">
+                        <small class="text-muted">
+                            * Las reservas están sujetas a disponibilidad. Te contactaremos para confirmar.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -47,7 +47,13 @@
                 <textarea id="descripcion" name="descripcion" rows="4">{{ producto.descripcion or '' }}</textarea>
             </div>
 
-            <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            <div style="margin-bottom: 15px;">
+                <label for="imagen">URL de la Imagen:</label><br>
+                <input type="url" id="imagen" name="imagen" value="{{ producto.imagen or '' }}" placeholder="https://ejemplo.com/imagen.jpg">
+                <small style="color: #666;">Opcional: Ingresa la URL de una imagen del plato</small>
+            </div>
+
+            <button type="submit" style="background-color: #c932af; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
                 Actualizar Producto
             </button>
             <a href="/productos" style="margin-left: 10px; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none;">
