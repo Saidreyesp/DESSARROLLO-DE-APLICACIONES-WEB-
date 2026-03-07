@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 proyecto_restaurante_el_gran_sabor
 │
 ├── app.py
@@ -5,3 +6,12 @@ proyecto_restaurante_el_gran_sabor
 ├── .gitignore
 └── templates/
     └── index.html
+=======
+proyecto_restaurante_el_gran_sabor
+│
+├── app.py
+├── requirements.txt
+├── .gitignore
+└── templates/
+    └── index.html
+>>>>>>> de0d8b5 (Resueltos los conflictos de fusión)

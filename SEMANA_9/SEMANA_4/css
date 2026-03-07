@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 mi-sitio-bootstrap/
 ├── index.html
 ├── styles.css
@@ -5,3 +6,12 @@ mi-sitio-bootstrap/
 │   ├── img/
 │   │   └── imagen1.jpg
 └── README.md
+=======
+mi-sitio-bootstrap/
+├── index.html
+├── styles.css
+├── assets/
+│   ├── img/
+│   │   └── imagen1.jpg
+└── README.md
+>>>>>>> de0d8b5 (Resueltos los conflictos de fusión)
