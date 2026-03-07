@@ -1,32 +1,149 @@
-{% extends "base.html" %}
-
-{% block title %}Reserva - Restaurante La Buena Mesa{% endblock %}
+{% block extra_css %}
+<style>
+/* Colores morado, rojo y celeste para que la reserva se vea llamativa */
+.reserva-form .form-control {
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    padding: 10px 15px;
+    font-size: 16px;
+}
+.reserva-form .form-control:focus {
+    border-color: #65138b;
+    box-shadow: 0 0 8px rgba(101,19,139,0.3);
+}
+.reserva-form .btn-success {
+    background: linear-gradient(135deg, #65138b 0%, #d32f2f 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+}
+.reserva-form .btn-success:hover {
+    background: linear-gradient(135deg, #d32f2f 0%, #00bcd4 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.info-restaurante {
+    background: linear-gradient(135deg, #fce4ec 0%, #e0f7fa 100%);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #65138b;
+}
+.card-header {
+    background: linear-gradient(135deg, #65138b 0%, #d32f2f 100%) !important;
+    color: white !important;
+}
+.card-footer {
+    background: linear-gradient(135deg, #00bcd4 0%, #65138b 100%) !important;
+    color: white;
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
         <div class="card">
-            <div class="card-header bg-success text-white">
-                <h2 class="mb-0">📅 Reserva para {{ cliente }}</h2>
+            <div class="card-header text-center">
+                <h2 class="mb-0">📅 Reserva tu Mesa</h2>
+                <p class="mb-0 mt-2">Disfruta de una experiencia gastronómica inolvidable</p>
             </div>
             <div class="card-body">
-                <div class="alert alert-success">
-                    <h5>{{ mensaje }}</h5>
-                </div>
-                <p class="lead">Gracias por elegir <strong>{{ negocio_name or 'Restaurante La Buena Mesa' }}</strong>. Te contactaremos pronto para confirmar tu reserva.</p>
-                
-                <div class="mt-4">
-                    <h5>Próximos pasos:</h5>
-                    <ol>
-                        <li>Recibirás una confirmación por correo electrónico</li>
-                        <li>Nuestro equipo te contactará para detalles finales</li>
-                        <li>¡Prepárate para una experiencia gastronómica inolvidable!</li>
-                    </ol>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="info-restaurante">
+                            <h4 class="text-primary mb-3">🍽️ Información del Restaurante</h4>
+                            <div class="mb-3">
+                                <strong>📍 Dirección:</strong><br>
+                                Calle Principal 123, Centro Histórico
+                            </div>
+                            <div class="mb-3">
+                                <strong>📞 Teléfono:</strong><br>
+                                +593 9 1234 5678
+                            </div>
+                            <div class="mb-3">
+                                <strong>🕐 Horarios:</strong><br>
+                                Lunes - Domingo: 12:00 - 22:00
+                            </div>
+                            <div class="mb-3">
+                                <strong>👥 Capacidad:</strong><br>
+                                Hasta 50 personas por reserva
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h4 class="text-success mb-3">📝 Datos de la Reserva</h4>
+                        <form method="post" class="reserva-form">
+                            <div class="mb-3">
+                                <label for="nombre" class="form-label fw-bold">👤 Nombre Completo</label>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label fw-bold">📧 Correo Electrónico</label>
+                                <input type="email" class="form-control" id="email" name="email" required placeholder="tu@email.com">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="telefono" class="form-label fw-bold">📱 Teléfono</label>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" required placeholder="+593 9 1234 5678">
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="fecha" class="form-label fw-bold">📅 Fecha</label>
+                                    <input type="date" class="form-control" id="fecha" name="fecha" required min="{{ fecha_min }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="hora" class="form-label fw-bold">⏰ Hora</label>
+                                    <select class="form-control" id="hora" name="hora" required>
+                                        <option value="">Seleccionar hora</option>
+                                        <option value="12:00">12:00</option>
+                                        <option value="13:00">13:00</option>
+                                        <option value="14:00">14:00</option>
+                                        <option value="15:00">15:00</option>
+                                        <option value="18:00">18:00</option>
+                                        <option value="19:00">19:00</option>
+                                        <option value="20:00">20:00</option>
+                                        <option value="21:00">21:00</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="personas" class="form-label fw-bold">👥 Número de Personas</label>
+                                <select class="form-control" id="personas" name="personas" required>
+                                    <option value="">Seleccionar cantidad</option>
+                                    <option value="1">1 persona</option>
+                                    <option value="2">2 personas</option>
+                                    <option value="3">3 personas</option>
+                                    <option value="4">4 personas</option>
+                                    <option value="5">5 personas</option>
+                                    <option value="6">6 personas</option>
+                                    <option value="7">7+ personas (llamar para confirmar)</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="mensaje" class="form-label fw-bold">💬 Mensaje Adicional (Opcional)</label>
+                                <textarea class="form-control" id="mensaje" name="mensaje" rows="3" placeholder="Alergias, preferencias especiales, ocasión especial..."></textarea>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-calendar-check"></i> Confirmar Reserva
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div class="card-footer">
-                <a href="/menu" class="btn btn-primary">📋 Ver Menú</a>
-                <a href="/" class="btn btn-secondary">🏠 Volver al Inicio</a>
+            <div class="card-footer text-center">
+                <small class="text-muted">
+                    * Las reservas están sujetas a disponibilidad. Te contactaremos para confirmar.
+                </small>
             </div>
         </div>
     </div>

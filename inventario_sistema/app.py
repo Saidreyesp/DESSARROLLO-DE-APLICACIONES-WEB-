@@ -142,10 +142,30 @@ def buscar():
     return render_template('buscar.html', termino=termino, resultados=resultados, negocio_name='Restaurante La Buena Mesa')
 
 
-@app.route('/reserva/<cliente>')
-def reserva_cliente(cliente):
-    mensaje = f'Bienvenido, {cliente}. Tu reserva en Restaurante La Buena Mesa está en proceso.'
-    return render_template('reserva.html', cliente=cliente, mensaje=mensaje, negocio_name='Restaurante La Buena Mesa')
+@app.route('/reserva', methods=['GET', 'POST'])
+def reserva():
+    from datetime import datetime
+    fecha_min = datetime.now().strftime('%Y-%m-%d')
+
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        telefono = request.form.get('telefono')
+        fecha = request.form.get('fecha')
+        hora = request.form.get('hora')
+        personas = request.form.get('personas')
+        mensaje_adicional = request.form.get('mensaje')
+
+        # Aquí podrías guardar la reserva en la base de datos
+        # Por ahora, solo mostramos confirmación
+        mensaje = f'¡Reserva confirmada! Gracias {nombre}, te esperamos el {fecha} a las {hora} para {personas} personas.'
+        return render_template('reserva_confirmacion.html',
+                             nombre=nombre, email=email, telefono=telefono,
+                             fecha=fecha, hora=hora, personas=personas,
+                             mensaje_adicional=mensaje_adicional, mensaje=mensaje,
+                             negocio_name='Restaurante La Buena Mesa')
+
+    return render_template('reserva.html', negocio_name='Restaurante La Buena Mesa', fecha_min=fecha_min)
 
 @app.route('/bajo-stock')
 def bajo_stock():
