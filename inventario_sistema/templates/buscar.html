@@ -1,80 +1,113 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buscar Producto</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        .search-box { margin: 20px 0; }
-        .search-box input { padding: 10px; width: 80%; font-size: 16px; border: 2px solid #65138b; border-radius: 6px; }
-        .search-box input:focus { border-color: #d32f2f; box-shadow: 0 0 8px rgba(211,47,47,0.3); }
-        .search-box button { padding: 10px 20px; background: linear-gradient(135deg, #65138b 0%, #00bcd4 100%); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .search-box button:hover { background: linear-gradient(135deg, #d32f2f 0%, #65138b 100%); }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: linear-gradient(135deg, #d32f2f 0%, #00bcd4 100%); color: white; }
-        tr:hover { background-color: #fce4ec; }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Sistema de Gestión de Inventario</h1>
-        <nav>
-            <ul>
-                <li><a href="/">Dashboard</a></li>
-                <li><a href="/productos">Productos</a></li>
-                <li><a href="/buscar">Buscar</a></li>
-            </ul>
-        </nav>
-    </header>
+{% extends "base.html" %}
 
-    <div class="container">
-        <h2>Buscar Producto</h2>
-        
-        <form method="GET" class="search-box">
-            <input type="text" name="termino" placeholder="Ingrese nombre o descripción..." value="{{ termino }}">
-            <button type="submit">Buscar</button>
-        </form>
+{% block title %}Buscar - {{ negocio_name }}{% endblock %}
 
-        {% if termino %}
-        <h3>Resultados para: "{{ termino }}"</h3>
-        
-        {% if resultados %}
-        <table>
+{% block content %}
+<style>
+    .resultados-titulo {
+        color: #F5F1E8 !important;
+        font-weight: 700;
+        background: #6A1E2D;
+        border: 1px solid #C9A227;
+        border-radius: 10px;
+        padding: 10px 14px;
+        display: inline-block;
+    }
+    .resultados-titulo .termino { color: #C9A227; }
+    .search-panel {
+        background: linear-gradient(135deg, #1E1E1E 0%, #121212 65%, #6A1E2D 100%);
+        border: 1px solid #C9A227;
+        border-radius: 14px;
+        padding: 1.2rem;
+        color: #F5F1E8;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+    .search-input {
+        border: 2px solid #C9A227;
+        border-radius: 10px;
+        background: #1E1E1E;
+        color: #F5F1E8;
+    }
+    .search-input::placeholder { color: #b7ab95; }
+    .results-card {
+        border: 1px solid #2f2f2f;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #1E1E1E;
+    }
+    .table thead th {
+        background: #6A1E2D;
+        color: #F5F1E8;
+        border: none;
+    }
+    .table tbody td,
+    .table tbody td strong {
+        color: #F5F1E8 !important;
+        border-color: #2f2f2f;
+    }
+    .table tbody tr {
+        background: #1E1E1E;
+    }
+    .table-hover > tbody > tr:hover > * {
+        color: #F5F1E8 !important;
+        background-color: #2a2a2a !important;
+    }
+    .badge-cat {
+        background: #6A1E2D;
+        color: #F5F1E8;
+    }
+</style>
+
+<div class="search-panel mb-4">
+    <h2 class="mb-2">Buscar plato</h2>
+    <p class="mb-3">Busca por nombre o descripcion para encontrar rapidamente un plato del menu.</p>
+    <form method="GET" class="row g-2">
+        <div class="col-md-9">
+            <input class="form-control form-control-lg search-input" type="text" name="termino" placeholder="Ejemplo: gallina, ceviche, asado..." value="{{ termino }}">
+        </div>
+        <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-primary btn-lg">Buscar</button>
+        </div>
+    </form>
+</div>
+
+{% if termino %}
+<h4 class="mb-3 resultados-titulo">Resultados para: <span class="termino">"{{ termino }}"</span></h4>
+{% if resultados %}
+<div class="results-card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Nombre</th>
+                    <th>Categoria</th>
                     <th>Cantidad</th>
                     <th>Precio</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
+                    <th>Accion</th>
                 </tr>
             </thead>
             <tbody>
                 {% for p in resultados %}
                 <tr>
                     <td>{{ p.id }}</td>
-                    <td>{{ p.nombre }}</td>
+                    <td><strong>{{ p.nombre }}</strong></td>
+                    <td><span class="badge badge-cat">{{ p.categoria or 'Sin categoria' }}</span></td>
                     <td>{{ p.cantidad }}</td>
                     <td>${{ "%.2f"|format(p.precio) }}</td>
-                    <td>{{ p.categoria or '-' }}</td>
                     <td>
-                        <a href="/producto/{{ p.id }}" style="text-decoration: none; color: #007bff;">Ver</a>
+                        <a href="/producto/{{ p.id }}" class="btn btn-sm btn-primary">Ver detalle</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        {% else %}
-        <p>No se encontraron resultados para: "{{ termino }}"</p>
-        {% endif %}
-        {% endif %}
     </div>
-
-    <footer>
-        <p>&copy; 2026 Sistema de Inventario</p>
-    </footer>
-</body>
-</html>
+</div>
+{% else %}
+<div class="alert" style="background:#1E1E1E; color:#F5F1E8; border:1px solid #6A1E2D;">No se encontraron platos con ese termino.</div>
+{% endif %}
+{% else %}
+<div class="alert" style="background:#1E1E1E; color:#F5F1E8; border:1px solid #C9A227;">Escribe un termino y presiona Buscar para ver resultados.</div>
+{% endif %}
+{% endblock %}

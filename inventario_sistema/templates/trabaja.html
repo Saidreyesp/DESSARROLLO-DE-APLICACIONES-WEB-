@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Trabaja con Nosotros - {{ negocio_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <section class="mb-4 p-4" style="border-radius:16px; border:1px solid #C9A227; background:linear-gradient(120deg,#1E1E1E 0%, #121212 60%, #6A1E2D 100%); color:#F5F1E8;">
+        <h2 style="font-family:'Playfair Display',serif; color:#C9A227;">Trabaja con Nosotros</h2>
+        <p class="mb-0">Forma parte del equipo de {{ negocio_name }}. Crea tu usuario y postula para nuestras vacantes.</p>
+    </section>
+
+    <section class="row g-4 mb-4">
+        <div class="col-lg-7">
+            <div class="card" style="border:1px solid #2f2f2f; background:#1E1E1E; color:#F5F1E8;">
+                <div class="card-body">
+                    <h4 style="color:#C9A227;">Creacion de Usuario</h4>
+                    <form method="POST" action="{{ url_for('trabaja_con_nosotros') }}" class="mt-3">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre completo *</label>
+                            <input type="text" name="nombre_completo" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre de usuario *</label>
+                            <input type="text" name="nombre_usuario" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Correo *</label>
+                            <input type="email" name="correo" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefono</label>
+                            <input type="text" name="telefono" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Cargo de interes</label>
+                            <select name="cargo_interes" class="form-select">
+                                <option value="">Selecciona una opcion</option>
+                                <option value="Cocina">Cocina</option>
+                                <option value="Atencion al Cliente">Atencion al Cliente</option>
+                                <option value="Caja">Caja</option>
+                                <option value="Limpieza">Limpieza</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Contrasena *</label>
+                            <input type="password" name="password" class="form-control" required>
+                            <small style="color:#C9A227;">Minimo 6 caracteres.</small>
+                        </div>
+                        <button type="submit" class="btn btn-success">Crear Usuario y Postular</button>
+                    </form>
+
+                    {% if creado %}
+                    <div class="alert mt-3" style="background:#102418; border:1px solid #2fa15f; color:#d8f7e6;">
+                        <strong>Paso final:</strong> Envia tu hoja de vida al correo
+                        <strong>{{ negocio_hr_email }}</strong>.
+                        <div class="mt-2">
+                            <a class="btn btn-sm btn-light"
+                               href="mailto:{{ negocio_hr_email }}?subject=Hoja%20de%20Vida%20-%20Postulacion%20{{ negocio_name|replace(' ', '%20') }}">
+                                Enviar Hoja de Vida
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+{% endblock %}

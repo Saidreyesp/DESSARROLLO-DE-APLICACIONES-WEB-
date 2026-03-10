@@ -1,156 +1,162 @@
 {% extends "base.html" %}
 
-{% block title %}Menú - Restaurante La Buena Mesa{% endblock %}
+{% block title %}Menu - {{ negocio_name }}{% endblock %}
 
 {% block content %}
 <style>
     .plato-card {
         transition: all 0.3s ease;
         border: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 12px 26px rgba(31, 111, 235, 0.16);
         height: 100%;
+        display: flex;
+        flex-direction: column;
+        border-radius: 16px;
+        overflow: hidden;
     }
     .plato-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        box-shadow: 0 12px 26px rgba(106, 30, 45, 0.35);
     }
     .plato-imagen {
         height: 220px;
         object-fit: cover;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #121212 0%, #1E1E1E 65%, #6A1E2D 100%);
     }
     .plato-body {
         display: flex;
         flex-direction: column;
+        flex-grow: 1;
     }
     .plato-titulo {
-        font-size: 1.2rem;
+        font-size: 1.24rem;
         font-weight: bold;
-        color: #2c3e50;
+        color: #F5F1E8;
         margin-bottom: 0.5rem;
-    }
-    .plato-categoria {
-        display: inline-block;
-        font-size: 0.75rem;
-        margin-bottom: 0.5rem;
-    }
-    .plato-descripcion {
-        font-size: 0.9rem;
-        color: #7f8c8d;
-        margin-bottom: 1rem;
-        flex-grow: 1;
+        font-family: 'Playfair Display', serif;
     }
     .plato-precio {
         font-size: 1.5rem;
-        color: #ae279c;
+        color: #C9A227;
         font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    .plato-stock {
-        font-size: 0.85rem;
-        color: #e74c3c;
-        margin-bottom: 1rem;
-    }
-    .botones-accion {
-        display: flex;
-        gap: 0.5rem;
-    }
-    .botones-accion .btn {
-        flex: 1;
-        font-size: 0.9rem;
-        padding: 0.5rem 0.75rem;
+        margin-top: auto; /* Empuja el precio hacia abajo */
     }
     .header-menu {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem 0;
+        background: linear-gradient(135deg, #1E1E1E 0%, #121212 65%, #6A1E2D 100%);
+        color: #F5F1E8;
+        padding: 2.5rem;
         margin-bottom: 2rem;
-        border-radius: 8px;
+        border-radius: 15px;
+        border: 1px solid #C9A227;
     }
-    .header-menu h2 {
-        margin: 0;
-        font-size: 2.5rem;
+    .header-menu h2 { font-family: 'Playfair Display', serif; font-size: 2.2rem; }
+    .plato-descripcion { min-height: 48px; }
+    .plato-stock small { color: #C9A227 !important; }
+    .badge-categoria { background: #6A1E2D; color: #F5F1E8; }
+    .bebidas-panel {
+        background: #1E1E1E;
+        border: 1px solid #C9A227;
+        border-radius: 15px;
+        padding: 1rem;
+        position: sticky;
+        top: 16px;
     }
-    .header-menu p {
-        margin: 0.5rem 0 0 0;
-        opacity: 0.9;
+    .bebidas-panel h3 {
+        color: #C9A227;
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 1rem;
     }
-    .vacio-menaje {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
+    .bebida-item {
+        border-bottom: 1px solid #2f2f2f;
+        padding: 0.7rem 0;
     }
-    .vacio-menaje .alert-info {
-        background-color: #d6eef8;
-        border-color: #67a8d0;
-        color: #1b5e75;
-    }
+    .bebida-item:last-child { border-bottom: 0; }
+    .bebida-nombre { color: #F5F1E8; font-weight: 700; }
+    .bebida-precio { color: #C9A227; font-weight: 700; }
 </style>
 
-<div class="header-menu">
+<div class="header-menu shadow">
     <div class="row align-items-center">
         <div class="col-md-8">
             <h2>🍽️ Menú de Platos</h2>
             <p>Deléitate con nuestros platos tradicionales ecuatorianos</p>
         </div>
         <div class="col-md-4 text-end">
-            <a href="/producto/nuevo" class="btn btn-light btn-lg">➕ Nuevo Plato</a>
+            <a href="/producto/nuevo" class="btn btn-light btn-lg shadow-sm">➕ Nuevo Plato</a>
         </div>
     </div>
 </div>
 
 {% if productos %}
 <div class="row g-4">
-    {% for p in productos %}
-    <div class="col-md-6 col-lg-4">
+    <div class="col-lg-8">
+        <div class="row g-4">
+    {% for p in platos %}
+    <div class="col-md-6">
         <div class="card plato-card">
             {% if p.imagen %}
-            <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="card-img-top plato-imagen" onerror="this.src='https://via.placeholder.com/400x220?text={{ p.nombre | urlencode }}'">
+            <img src="{{ p.imagen }}" alt="{{ p.nombre }}" class="card-img-top plato-imagen" onerror="this.src='https://via.placeholder.com/400x220?text=Plato+Sin+Imagen'">
             {% else %}
             <div class="plato-imagen d-flex align-items-center justify-content-center text-white">
-                <span style="font-size: 3rem;">🍖</span>
+                <span style="font-size: 4rem;">🍲</span>
             </div>
             {% endif %}
             
             <div class="card-body plato-body">
-                <div class="plato-titulo">{{ p.nombre }}</div>
-                
-                {% if p.categoria %}
-                <span class="badge bg-info plato-categoria">🏷️ {{ p.categoria }}</span>
-                {% endif %}
-                
-                {% if p.descripcion %}
-                <p class="plato-descripcion">{{ p.descripcion }}</p>
-                {% endif %}
-                
-                <div class="plato-precio">${{ "%.2f"|format(p.precio) }}</div>
-                
-                <div class="plato-stock">
-                    {% if p.cantidad > 0 %}
-                    <span class="text-success">✓ Stock: {{ p.cantidad }} unidades</span>
-                    {% else %}
-                    <span class="text-danger">✗ Sin stock</span>
-                    {% endif %}
+                <div class="d-flex justify-content-between">
+                    <div class="plato-titulo">{{ p.nombre }}</div>
+                    <span class="badge badge-categoria align-self-start">{{ p.categoria }}</span>
                 </div>
                 
-                <div class="botones-accion">
-                    <a href="/plato/{{ p.nombre }}" class="btn btn-sm btn-primary">👁️ Ver</a>
-                    <a href="/producto/editar/{{ p.id }}" class="btn btn-sm btn-warning">✏️ Editar</a>
-                    <form method="POST" action="/producto/eliminar/{{ p.id }}" style="flex: 1;">
-                        <button type="submit" class="btn btn-sm btn-danger w-100" onclick="return confirm('¿Eliminar este plato?')">🗑️ Borrar</button>
-                    </form>
+                <p class="plato-descripcion" style="color:#d8d1c7;">{{ p.descripcion or 'Preparado con ingredientes frescos de la region.' }}</p>
+                
+                <div class="d-flex justify-content-between align-items-end">
+                    <div class="plato-precio">${{ "%.2f"|format(p.precio) }}</div>
+                    <div class="plato-stock mb-1">
+                        {% if p.cantidad > 0 %}
+                        <small class="text-success">✓ Stock: {{ p.cantidad }}</small>
+                        {% else %}
+                        <small class="text-danger">✗ Agotado</small>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="botones-accion mt-3 d-flex gap-2">
+                    <a href="/plato/{{ p.nombre }}" class="btn btn-outline-primary btn-sm w-100">👁️ Ver</a>
                 </div>
             </div>
         </div>
     </div>
     {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <aside class="bebidas-panel">
+            <h3>Bebidas</h3>
+            {% if bebidas %}
+                {% for b in bebidas %}
+                <div class="bebida-item">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div>
+                            <div class="bebida-nombre">{{ b.nombre }}</div>
+                            <small style="color:#d8d1c7;">{{ b.descripcion or 'Bebida disponible.' }}</small>
+                        </div>
+                        <span class="bebida-precio">${{ "%.2f"|format(b.precio) }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="color:#d8d1c7; margin:0;">No hay bebidas registradas aun.</p>
+            {% endif %}
+        </aside>
+    </div>
 </div>
 {% else %}
-<div class="alert alert-info vacio-menaje" style="font-size: 1.1rem;">
-    <h4 class="alert-heading">📋 Menú Vacío</h4>
-    <p>No hay platos en el menú aún.</p>
-    <hr>
-    <a href="/producto/nuevo" class="btn btn-primary btn-lg">➕ Agregar el Primer Plato</a>
+<div class="alert alert-info text-center py-5 shadow-sm">
+    <h4>📋 Menú Vacío</h4>
+    <p>Aun no has agregado platos en {{ negocio_name }}.</p>
+    <a href="/producto/nuevo" class="btn btn-primary mt-3">Agregar el Primer Plato</a>
 </div>
 {% endif %}
-
 {% endblock %}

@@ -1,59 +1,69 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuevo Producto</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header>
+    <h1>Sistema de Gestión de Inventario</h1>
+    <nav>
+      <ul>
+        <li><a href="/">Dashboard</a></li>
+        <li><a href="/productos">Productos</a></li>
+        <li><a href="/producto/nuevo">Nuevo Producto</a></li>
+      </ul>
+    </nav>
+  </header>
 
-{% block title %}Nuevo Plato - Restaurante La Buena Mesa{% endblock %}
+  <div class="container" style="max-width: 600px; margin: 50px auto;">
+    <h2 style="color: #6A1E7A;">Agregar Nuevo Producto</h2>
+    
+    <form method="post" style="background: #F5F1E8; padding: 20px; border-radius: 8px; border: 1px solid #C9A227; color: #6A1E7A;">
+      <div style="margin-bottom: 15px;">
+        <label for="nombre" style="color: #6A1E7A; font-weight: 700;">Nombre del Producto:</label><br>
+        <input type="text" id="nombre" name="nombre" required style="width: 100%; padding: 8px; color: #6A1E7A; border: 1px solid #C9A227; background: #fff;">
+      </div>
 
-{% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <div class="card">
-            <div class="card-header bg-success text-white">
-                <h2 class="mb-0">➕ Agregar Nuevo Plato</h2>
-            </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label">Nombre del Plato</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Ej: Ceviche de Camarón">
-                    </div>
+      <div style="margin-bottom: 15px;">
+        <label for="cantidad" style="color: #6A1E7A; font-weight: 700;">Cantidad:</label><br>
+        <input type="number" id="cantidad" name="cantidad" min="0" required style="width: 100%; padding: 8px; color: #6A1E7A; border: 1px solid #C9A227; background: #fff;">
+      </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="cantidad" class="form-label">Cantidad Disponible</label>
-                            <input type="number" class="form-control" id="cantidad" name="cantidad" min="0" required placeholder="0">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="precio" class="form-label">Precio Unitario ($)</label>
-                            <input type="number" class="form-control" id="precio" name="precio" min="0" step="0.01" required placeholder="0.00">
-                        </div>
-                    </div>
+      <div style="margin-bottom: 15px;">
+        <label for="precio" style="color: #6A1E7A; font-weight: 700;">Precio Unitario:</label><br>
+        <input type="number" id="precio" name="precio" min="0" step="0.01" required style="width: 100%; padding: 8px; color: #6A1E7A; border: 1px solid #C9A227; background: #fff;">
+      </div>
 
-                    <div class="mb-3">
-                        <label for="categoria" class="form-label">Categoría</label>
-                        <select class="form-control" id="categoria" name="categoria" required>
-                            <option value="">Seleccionar categoría</option>
-                            <option value="Mariscos">Mariscos</option>
-                            <option value="Carnes">Carnes</option>
-                            <option value="Sopas">Sopas</option>
-                            <option value="Ensaladas">Ensaladas</option>
-                            <option value="Postres">Postres</option>
-                            <option value="Bebidas">Bebidas</option>
-                        </select>
-                    </div>
+      <div style="margin-bottom: 15px;">
+        <label for="categoria" style="color: #6A1E7A; font-weight: 700;">Categoría:</label><br>
+        <input type="text" id="categoria" name="categoria" style="width: 100%; padding: 8px; color: #6A1E7A; border: 1px solid #C9A227; background: #fff;">
+      </div>
 
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcion" name="descripcion" rows="3" placeholder="Describe los ingredientes y preparación del plato..."></textarea>
-                    </div>
+      <div style="margin-bottom: 15px;">
+        <label for="descripcion" style="color: #6A1E7A; font-weight: 700;">Descripción:</label><br>
+        <textarea id="descripcion" name="descripcion" rows="4" style="width: 100%; padding: 8px; color: #6A1E7A; border: 1px solid #C9A227; background: #fff;"></textarea>
+      </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="submit" class="btn btn-success">
-                            Agregar Plato
-                        </button>
-                        <a href="/menu" class="btn btn-secondary">Cancelar</a>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-{% endblock %}
+      <div style="margin-bottom: 15px;">
+        <label for="imagen" style="color: #6A1E7A; font-weight: 700;">URL de la Imagen:</label><br>
+        <input type="url" id="imagen" name="imagen" placeholder="https://ejemplo.com/imagen.jpg" style="width: 100%; padding: 8px; color: #6A1E7A; border: 1px solid #C9A227; background: #fff;">
+        <small style="color: #6A1E7A;">Opcional: Ingresa la URL de una imagen del plato</small>
+      </div>
+
+      <button type="submit" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+        Guardar Producto
+      </button>
+      <a href="/productos" style="margin-left: 10px; padding: 10px 20px; background-color: #6c757d; color: white; border-radius: 4px; text-decoration: none;">
+        Cancelar
+      </a>
+    </form>
+  </div>
+
+  <footer>
+    <p>&copy; 2026 Sistema de Inventario</p>
+  </footer>
+</body>
+</html>

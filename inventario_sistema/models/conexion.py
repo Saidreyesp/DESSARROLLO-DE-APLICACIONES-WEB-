@@ -30,6 +30,7 @@ class ConexionSQLite:
                 precio REAL NOT NULL DEFAULT 0.0,
                 categoria TEXT,
                 descripcion TEXT,
+                imagen TEXT,
                 fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )''')
@@ -41,17 +42,23 @@ class ConexionSQLite:
                 descripcion TEXT
             )''')
 
+            # Migracion ligera para bases antiguas que no tienen el campo imagen.
+            self.cursor.execute("PRAGMA table_info(productos)")
+            columnas = {row[1] for row in self.cursor.fetchall()}
+            if 'imagen' not in columnas:
+                self.cursor.execute('ALTER TABLE productos ADD COLUMN imagen TEXT')
+
             self.conn.commit()
         except sqlite3.Error as e:
             print(f"Error al crear tablas: {e}")
 
-    def añadir_producto(self, nombre, cantidad, precio, categoria=None, descripcion=None):
+    def añadir_producto(self, nombre, cantidad, precio, categoria=None, descripcion=None, imagen=None):
         """Añade un nuevo producto a la base de datos."""
         try:
             self.cursor.execute('''
-            INSERT INTO productos (nombre, cantidad, precio, categoria, descripcion)
-            VALUES (?, ?, ?, ?, ?)''',
-            (nombre, cantidad, precio, categoria, descripcion))
+            INSERT INTO productos (nombre, cantidad, precio, categoria, descripcion, imagen)
+            VALUES (?, ?, ?, ?, ?, ?)''',
+            (nombre, cantidad, precio, categoria, descripcion, imagen))
             self.conn.commit()
             return self.cursor.lastrowid
         except sqlite3.IntegrityError:
@@ -82,7 +89,7 @@ class ConexionSQLite:
             print(f"Error al eliminar producto: {e}")
             return False
 
-    def actualizar_producto(self, id, nombre=None, cantidad=None, precio=None, categoria=None, descripcion=None):
+    def actualizar_producto(self, id, nombre=None, cantidad=None, precio=None, categoria=None, descripcion=None, imagen=None):
         """Actualiza los datos de un producto existente."""
         try:
             updates = []
@@ -103,6 +110,9 @@ class ConexionSQLite:
             if descripcion is not None:
                 updates.append('descripcion = ?')
                 params.append(descripcion)
+            if imagen is not None:
+                updates.append('imagen = ?')
+                params.append(imagen)
 
             if updates:
                 updates.append('fecha_actualizacion = CURRENT_TIMESTAMP')

@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}MySQL - {{ negocio_name }}{% endblock %}
+
+{% block content %}
+<style>
+    .mysql-card { padding: 1rem; border: 1px solid #C9A227; border-radius: 12px; background: #1E1E1E; }
+    .mysql-title { color: #C9A227; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .table-wrap { max-height: 280px; overflow: auto; border: 1px solid #2f2f2f; border-radius: 8px; }
+    .table thead th { background: #6A1E2D; color: #F5F1E8; position: sticky; top: 0; }
+    .table td, .table th { color: #F5F1E8; border-color: #2f2f2f; }
+    .form-label { color: #F5F1E8; }
+</style>
+
+<h2 class="mysql-title">Panel MySQL</h2>
+<p>Estado de conexion: <strong>{{ mysql_status }}</strong></p>
+
+<form method="POST" action="/mysql/init" class="mb-3">
+    <button class="btn btn-primary" type="submit">Crear tablas MySQL</button>
+</form>
+
+<div class="grid mb-4">
+    <div class="mysql-card">
+        <h4 class="mysql-title">Usuarios (usuarios)</h4>
+        <form method="POST" action="/mysql/usuarios" class="row g-2 mb-3">
+            <input type="hidden" name="accion" value="crear">
+            <div class="col-12">
+                <label class="form-label">Nombre</label>
+                <input class="form-control" name="nombre" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Mail</label>
+                <input class="form-control" name="mail" type="email" required>
+            </div>
+            <div class="col-12">
+                <label class="form-label">Password</label>
+                <input class="form-control" name="password" required>
+            </div>
+            <div class="col-12"><button class="btn btn-primary" type="submit">Insertar usuario</button></div>
+        </form>
+
+        <div class="table-wrap">
+            <table class="table table-sm mb-0">
+                <thead><tr><th>ID</th><th>Nombre</th><th>Mail</th><th>Accion</th></tr></thead>
+                <tbody>
+                    {% for u in usuarios %}
+                    <tr>
+                        <td>{{ u.id_usuario }}</td>
+                        <td>{{ u.nombre }}</td>
+                        <td>{{ u.mail }}</td>
+                        <td>
+                            <form method="POST" action="/mysql/usuarios" style="display:inline;">
+                                <input type="hidden" name="accion" value="eliminar">
+                                <input type="hidden" name="id_usuario" value="{{ u.id_usuario }}">
+                                <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mysql-card">
+        <h4 class="mysql-title">Productos (productos_mysql)</h4>
+        <form method="POST" action="/mysql/productos" class="row g-2 mb-3">
+            <input type="hidden" name="accion" value="crear">
+            <div class="col-12"><label class="form-label">Nombre</label><input class="form-control" name="nombre" required></div>
+            <div class="col-6"><label class="form-label">Categoria</label><input class="form-control" name="categoria"></div>
+            <div class="col-3"><label class="form-label">Cantidad</label><input class="form-control" name="cantidad" type="number" min="0" value="0"></div>
+            <div class="col-3"><label class="form-label">Precio</label><input class="form-control" name="precio" type="number" step="0.01" min="0" value="0"></div>
+            <div class="col-12"><button class="btn btn-primary" type="submit">Insertar producto</button></div>
+        </form>
+
+        <div class="table-wrap">
+            <table class="table table-sm mb-0">
+                <thead><tr><th>ID</th><th>Nombre</th><th>Cat.</th><th>Cant.</th><th>Precio</th><th>Accion</th></tr></thead>
+                <tbody>
+                    {% for p in productos_mysql %}
+                    <tr>
+                        <td>{{ p.id_producto }}</td>
+                        <td>{{ p.nombre }}</td>
+                        <td>{{ p.categoria }}</td>
+                        <td>{{ p.cantidad }}</td>
+                        <td>${{ "%.2f"|format(p.precio|float) }}</td>
+                        <td>
+                            <form method="POST" action="/mysql/productos" style="display:inline;">
+                                <input type="hidden" name="accion" value="eliminar">
+                                <input type="hidden" name="id_producto" value="{{ p.id_producto }}">
+                                <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="mysql-card">
+        <h4 class="mysql-title">Reservas (reservas_mysql)</h4>
+        <form method="POST" action="/mysql/reservas" class="row g-2 mb-3">
+            <input type="hidden" name="accion" value="crear">
+            <div class="col-12"><label class="form-label">Cliente</label><input class="form-control" name="cliente" required></div>
+            <div class="col-6"><label class="form-label">Telefono</label><input class="form-control" name="telefono"></div>
+            <div class="col-3"><label class="form-label">Personas</label><input class="form-control" name="personas" type="number" min="1" value="1"></div>
+            <div class="col-12"><label class="form-label">Fecha Reserva</label><input class="form-control" name="fecha_reserva" type="datetime-local"></div>
+            <div class="col-12"><button class="btn btn-primary" type="submit">Insertar reserva</button></div>
+        </form>
+
+        <div class="table-wrap">
+            <table class="table table-sm mb-0">
+                <thead><tr><th>ID</th><th>Cliente</th><th>Personas</th><th>Fecha</th><th>Accion</th></tr></thead>
+                <tbody>
+                    {% for r in reservas_mysql %}
+                    <tr>
+                        <td>{{ r.id_reserva }}</td>
+                        <td>{{ r.cliente }}</td>
+                        <td>{{ r.personas }}</td>
+                        <td>{{ r.fecha_reserva or '-' }}</td>
+                        <td>
+                            <form method="POST" action="/mysql/reservas" style="display:inline;">
+                                <input type="hidden" name="accion" value="eliminar">
+                                <input type="hidden" name="id_reserva" value="{{ r.id_reserva }}">
+                                <button class="btn btn-danger btn-sm" type="submit">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

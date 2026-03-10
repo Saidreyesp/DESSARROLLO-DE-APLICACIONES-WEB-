@@ -11,6 +11,11 @@
                     <h2 class="mb-0">🍽️ {{ plato.nombre }}</h2>
                 </div>
                 <div class="card-body">
+                    {% if plato.imagen %}
+                    <div class="mb-3">
+                        <img src="{{ plato.imagen }}" alt="{{ plato.nombre }}" class="img-fluid rounded" style="max-height: 320px; object-fit: cover;">
+                    </div>
+                    {% endif %}
                     <p><strong>Categoría:</strong> <span class="badge bg-info">{{ plato.categoria or 'Sin especificar' }}</span></p>
                     <p><strong>Precio:</strong> <span class="text-success" style="font-size: 1.5rem;">${{ "%.2f"|format(plato.precio) }}</span></p>
                     <p><strong>Disponibles:</strong> <span class="badge bg-success">{{ plato.cantidad }} unidades</span></p>

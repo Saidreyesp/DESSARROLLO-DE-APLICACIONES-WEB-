@@ -1,67 +1,51 @@
 {% extends "base.html" %}
 
-{% block title %}Acerca de - Restaurante La Buena Mesa{% endblock %}
+{% block title %}Contactanos - {{ negocio_name }}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <h2>ℹ️ Acerca de Nosotros</h2>
-        
-        <div class="card mt-4">
-            <div class="card-body">
-                <h4>{{ negocio_name or 'Restaurante La Buena Mesa' }}</h4>
-                <p class="text-muted">Un lugar donde la tradición se encuentra con la innovación culinaria</p>
-                
-                <hr>
-                
-                <h5>Nuestra Misión</h5>
-                <p>Proporcionar experiencias gastronómicas excepcionales, combinando sabores auténticos con técnicas modernas, en un ambiente acogedor y servicio de calidad.</p>
-                
-                <h5>Nuestra Visión</h5>
-                <p>Ser reconocidos como el restaurante preferido de la región, donde cada cliente se siente como parte de nuestra familia.</p>
-                
-                <h5>Nuestros Valores</h5>
-                <ul>
-                    <li><strong>Calidad:</strong> Utilizamos ingredientes frescos y de la mejor calidad</li>
-                    <li><strong>Respeto:</strong> Valoramos a nuestros clientes y colaboradores</li>
-                    <li><strong>Innovación:</strong> Constantemente buscamos nuevas formas de mejorar</li>
-                    <li><strong>Sostenibilidad:</strong> Comprometidos con el medio ambiente</li>
-                </ul>
-            </div>
-        </div>
+<div class="container mt-3">
+    <section class="mb-4">
+        <h2>Contactanos con Nosotros</h2>
+        <p>
+            En <strong>{{ negocio_name }}</strong> estamos listos para atenderte. Aqui tienes nuestros datos de contacto
+            para reservas, pedidos y comprobantes.
+        </p>
+    </section>
 
-        <div class="row mt-4">
+    <section class="mb-4">
+        <h3>Datos de Contacto</h3>
+        <div class="row">
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">📍 Ubicación</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Dirección:</strong> Calle Principal, Guayaquil avenida México</p>
-                        <p><strong>Ciudad:</strong> Quevedo</p>
-                        <p><strong>Teléfono:</strong> (+593) 967283141</p>
-                    </div>
-                </div>
+                <p><strong>Telefono:</strong> (+593) 928673141</p>
+                <p><strong>WhatsApp:</strong> +593 {{ negocio_receipt_phone }}</p>
+                <p><strong>Atencion:</strong> Reservas y pedidos</p>
             </div>
-            
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-success text-white">
-                        <h5 class="mb-0">🕒 Horarios</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Lunes - Viernes:</strong> 12:00 PM - 10:00 PM</p>
-                        <p><strong>Sábado:</strong> 12:30 PM - 11:00 PM</p>
-                        <p><strong>Domingo:</strong> 12:30 PM - 9:00 PM</p>
-                    </div>
-                </div>
+                <h4>Horario de Atencion</h4>
+                <p><strong>{{ negocio_hours }}</strong></p>
             </div>
         </div>
+    </section>
 
-        <div class="mt-4 text-center">
-            <a href="/reserva/Cliente" class="btn btn-success btn-lg">📅 Hacer una Reserva</a>
-            <a href="/menu" class="btn btn-primary btn-lg">📋 Ver Menú</a>
+    <section class="mb-4">
+        <div class="card" style="padding:16px; border:1px solid #C9A227;">
+            <h3 style="color:#C9A227; margin-top:0;">Pago por Transferencia</h3>
+            <p style="margin:6px 0;"><strong>Banco:</strong> {{ negocio_bank }}</p>
+            <p style="margin:6px 0;"><strong>Tipo de cuenta:</strong> {{ negocio_account_type }}</p>
+            <p style="margin:6px 0;"><strong>Numero de cuenta:</strong> {{ negocio_account_number }}</p>
+            <p style="margin:6px 0;"><strong>A nombre de:</strong> {{ negocio_account_owner }}</p>
+            <a class="btn btn-primary mt-2"
+               href="https://wa.me/593992884043?text=Hola%2C%20adjunto%20mi%20comprobante%20de%20transferencia%20para%20{{ negocio_name|replace(' ', '%20') }}"
+               target="_blank"
+               rel="noopener noreferrer">
+                    Enviar comprobante aqui
+            </a>
         </div>
-    </div>
+    </section>
+
+    <section class="text-center mt-4">
+        <a href="/reserva/Cliente" class="btn btn-success btn-lg">Hacer una Reserva</a>
+        <a href="/menu" class="btn btn-primary btn-lg ms-2">Ver Menu</a>
+    </section>
 </div>
 {% endblock %}
