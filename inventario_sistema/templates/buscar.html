@@ -96,7 +96,7 @@
                     <td>{{ p.cantidad }}</td>
                     <td>${{ "%.2f"|format(p.precio) }}</td>
                     <td>
-                        <a href="/producto/{{ p.id }}" class="btn btn-sm btn-primary">Ver detalle</a>
+                        <a href="{{ url_for('detalle_plato', nombre=p.nombre) }}" class="btn btn-sm btn-primary">Ver detalle</a>
                     </td>
                 </tr>
                 {% endfor %}

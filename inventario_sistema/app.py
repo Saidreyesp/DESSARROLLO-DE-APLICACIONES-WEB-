@@ -334,16 +334,42 @@ def nuevo_producto():
         categoria = request.form.get('categoria')
         descripcion = request.form.get('descripcion')
         imagen = request.form.get('imagen')
-        
+
         id_nuevo = db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion, imagen)
-        
+
         if id_nuevo > 0:
             record = {'id': id_nuevo, 'nombre': nombre, 'cantidad': cantidad, 'precio': precio}
             save_txt(record); save_json(record); save_csv(record)
             flash(f'Plato "{nombre}" añadido exitosamente.', 'success')
             return redirect(url_for('productos'))
-    
+
     return render_template('producto_form.html')
+
+
+@app.route('/producto/anadir-menu/<int:id>', methods=['GET', 'POST'])
+def anadir_plato_menu(id):
+    producto = db_conexion.obtener_producto(id)
+    if not producto:
+        flash('No se encontro el plato para anadir al menu.', 'error')
+        return redirect(url_for('productos'))
+
+    cantidad_actual = int(producto.get('cantidad') or 0)
+    nueva_cantidad = cantidad_actual + 1
+
+    if db_conexion.actualizar_producto(id, cantidad=nueva_cantidad):
+        record = {
+            'id': producto.get('id'),
+            'nombre': producto.get('nombre'),
+            'cantidad': nueva_cantidad,
+            'precio': float(producto.get('precio') or 0),
+        }
+        save_txt(record); save_json(record); save_csv(record)
+        flash(f'Se aumento la cantidad de "{producto.get("nombre")}" a {nueva_cantidad}.', 'success')
+    else:
+        flash('No se pudo actualizar la cantidad del plato.', 'error')
+
+    return redirect(url_for('productos'))
+
 
 @app.route('/producto/editar/<int:id>', methods=['GET', 'POST'])
 def editar_producto(id):
@@ -521,7 +547,11 @@ def mysql_reservas_crud():
 
 @app.errorhandler(404)
 def pagina_no_encontrada(error):
-    return render_template('error_404.html'), 404
+    try:
+        return render_template('error_404.html'), 404
+    except TemplateNotFound:
+        return '404 - Pagina no encontrada', 404
 
 if __name__ == '__main__':
     app.run(debug=True)
+

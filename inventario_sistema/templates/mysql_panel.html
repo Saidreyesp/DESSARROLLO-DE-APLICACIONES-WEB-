@@ -30,8 +30,8 @@
                 <input class="form-control" name="nombre" required>
             </div>
             <div class="col-12">
-                <label class="form-label">Mail</label>
-                <input class="form-control" name="mail" type="email" required>
+                <label class="form-label">Email</label>
+                <input class="form-control" name="email" type="email" required>
             </div>
             <div class="col-12">
                 <label class="form-label">Password</label>
@@ -42,13 +42,13 @@
 
         <div class="table-wrap">
             <table class="table table-sm mb-0">
-                <thead><tr><th>ID</th><th>Nombre</th><th>Mail</th><th>Accion</th></tr></thead>
+                <thead><tr><th>ID</th><th>Nombre</th><th>Email</th><th>Accion</th></tr></thead>
                 <tbody>
                     {% for u in usuarios %}
                     <tr>
                         <td>{{ u.id_usuario }}</td>
                         <td>{{ u.nombre }}</td>
-                        <td>{{ u.mail }}</td>
+                        <td>{{ u.email }}</td>
                         <td>
                             <form method="POST" action="/mysql/usuarios" style="display:inline;">
                                 <input type="hidden" name="accion" value="eliminar">

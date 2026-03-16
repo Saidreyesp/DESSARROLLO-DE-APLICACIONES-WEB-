@@ -10,7 +10,7 @@ USE comedor_alexandra;
 CREATE TABLE IF NOT EXISTS usuarios (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(120) NOT NULL,
-  mail VARCHAR(150) NOT NULL UNIQUE,
+  email VARCHAR(150) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS reservas_mysql (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Datos iniciales opcionales
-INSERT INTO usuarios (nombre, mail, password)
+INSERT INTO usuarios (nombre, email, password)
 SELECT 'Administrador', 'admin@comedoralexandra.com', 'admin123'
 WHERE NOT EXISTS (
-  SELECT 1 FROM usuarios WHERE mail = 'admin@comedoralexandra.com'
+  SELECT 1 FROM usuarios WHERE email = 'admin@comedoralexandra.com'
 );

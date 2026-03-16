@@ -50,7 +50,7 @@ class MySQLManager:
             CREATE TABLE IF NOT EXISTS usuarios (
                 id_usuario INT AUTO_INCREMENT PRIMARY KEY,
                 nombre VARCHAR(120) NOT NULL,
-                mail VARCHAR(150) NOT NULL UNIQUE,
+                email VARCHAR(150) NOT NULL UNIQUE,
                 password VARCHAR(255) NOT NULL,
                 creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -81,6 +81,17 @@ class MySQLManager:
             cur = conn.cursor(dictionary=True)
             for q in queries:
                 cur.execute(q)
+
+            # Compatibilidad con versiones anteriores que usaban columna "mail".
+            cur.execute("SHOW COLUMNS FROM usuarios LIKE 'email'")
+            col_email = cur.fetchone()
+            cur.execute("SHOW COLUMNS FROM usuarios LIKE 'mail'")
+            col_mail = cur.fetchone()
+            if not col_email and col_mail:
+                cur.execute("ALTER TABLE usuarios ADD COLUMN email VARCHAR(150) NULL")
+                cur.execute("UPDATE usuarios SET email = mail WHERE email IS NULL")
+                cur.execute("ALTER TABLE usuarios MODIFY email VARCHAR(150) NOT NULL")
+
             conn.commit()
 
     def fetch_all(self, table_name, id_column):
@@ -89,23 +100,41 @@ class MySQLManager:
             cur.execute(f"SELECT * FROM {table_name} ORDER BY {id_column} DESC")
             return cur.fetchall()
 
-    def insert_usuario(self, nombre, mail, password):
+    def insert_usuario(self, nombre, email, password):
         with self.connection() as conn:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO usuarios (nombre, mail, password) VALUES (%s, %s, %s)",
-                (nombre, mail, password),
+                "INSERT INTO usuarios (nombre, email, password) VALUES (%s, %s, %s)",
+                (nombre, email, password),
             )
             conn.commit()
 
-    def update_usuario(self, id_usuario, nombre, mail, password):
+    def update_usuario(self, id_usuario, nombre, email, password):
         with self.connection() as conn:
             cur = conn.cursor()
             cur.execute(
-                "UPDATE usuarios SET nombre=%s, mail=%s, password=%s WHERE id_usuario=%s",
-                (nombre, mail, password, id_usuario),
+                "UPDATE usuarios SET nombre=%s, email=%s, password=%s WHERE id_usuario=%s",
+                (nombre, email, password, id_usuario),
             )
             conn.commit()
+
+    def get_usuario_by_id(self, id_usuario):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                "SELECT id_usuario, nombre, email, password FROM usuarios WHERE id_usuario=%s",
+                (id_usuario,),
+            )
+            return cur.fetchone()
+
+    def get_usuario_by_email(self, email):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                "SELECT id_usuario, nombre, email, password FROM usuarios WHERE email=%s",
+                (email,),
+            )
+            return cur.fetchone()
 
     def delete_usuario(self, id_usuario):
         with self.connection() as conn:

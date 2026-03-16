@@ -24,7 +24,10 @@
                     {% endif %}
                 </div>
                 <div class="card-footer">
-                    <a href="/producto/editar/{{ plato.id }}" class="btn btn-warning">✏️ Editar Plato</a>
+                    <span style="margin-right:8px; font-weight:700;">Añadir:</span>
+                    <a href="/producto/anadir-menu/{{ plato.id }}?sumar=1" class="btn btn-warning">+1</a>
+                    <a href="/producto/anadir-menu/{{ plato.id }}?sumar=5" class="btn btn-warning">+5</a>
+                    <a href="/producto/anadir-menu/{{ plato.id }}?sumar=10" class="btn btn-warning">+10</a>
                     <a href="/menu" class="btn btn-secondary">📋 Volver al Menú</a>
                 </div>
             </div>

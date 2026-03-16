@@ -84,12 +84,28 @@
     <!-- Barra de navegación -->
     <nav>
         <ul>
-            <li><a href="/">🏠 Inicio</a></li>
-            <li><a href="/menu">📋 Menú</a></li>
+            <li><a href="{{ url_for('index') }}">🏠 Inicio</a></li>
+            <li><a href="{{ url_for('about') }}">📞 Contactanos</a></li>
+            {% if has_auth_routes %}
+                {% if current_user is defined and current_user.is_authenticated %}
+                <li><a href="{{ url_for('productos') }}">📋 Menu</a></li>
+                <li><a href="{{ url_for('buscar') }}">🔍 Buscar</a></li>
+                <li><a href="{{ url_for('reserva') }}">📅 Reservas</a></li>
+                <li><a href="{{ url_for('reportes') }}">📊 Reportes</a></li>
+                    {% if has_mysql_panel %}
+                    <li><a href="{{ url_for('mysql_panel') }}">🗄️ Panel MySQL</a></li>
+                    {% endif %}
+                <li><a href="{{ url_for('logout') }}">🚪 Cerrar Sesion</a></li>
+                {% else %}
+                <li><a href="{{ url_for('login') }}">🔐 Iniciar Sesion</a></li>
+                <li><a href="{{ url_for('registro') }}">📝 Registrarse</a></li>
+                {% endif %}
+            {% else %}
+            <li><a href="{{ url_for('productos') }}">📋 Menú</a></li>
             <li><a href="/buscar">🔍 Buscar</a></li>
             <li><a href="/reserva/Cliente">📅 Reservas</a></li>
-            <li><a href="/about">📞 Contactanos</a></li>
-            <li><a href="/trabaja-con-nosotros">💼 Trabaja con Nosotros</a></li>
+            <li><a href="{{ url_for('trabaja_con_nosotros') }}">💼 Trabaja con Nosotros</a></li>
+            {% endif %}
         </ul>
     </nav>
 
