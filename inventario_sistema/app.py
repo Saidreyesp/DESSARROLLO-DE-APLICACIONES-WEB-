@@ -267,6 +267,12 @@ def productos():
     return render_template('productos.html', productos=productos, platos=platos, bebidas=bebidas)
 
 
+
+
+@app.route('/carrito')
+def carrito():
+    return render_template('carrito.html', negocio_name=BUSINESS_NAME)
+
 @app.route('/plato/<string:nombre>')
 def detalle_plato(nombre):
     producto = next((p for p in db_conexion.obtener_todos_productos() if p.get('nombre') == nombre), None)

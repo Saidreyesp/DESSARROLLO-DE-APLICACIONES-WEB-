@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar Producto MySQL{% endblock %}
+
+{% block content %}
+<div class="card p-4" style="max-width: 720px; margin: 0 auto;">
+    <h2>Confirmar eliminacion</h2>
+    <p>Estas a punto de eliminar este producto de MySQL:</p>
+
+    <ul class="mb-4">
+        <li><strong>ID:</strong> {{ producto.id_producto }}</li>
+        <li><strong>Nombre:</strong> {{ producto.nombre }}</li>
+        <li><strong>Categoria:</strong> {{ producto.categoria or '-' }}</li>
+        <li><strong>Cantidad:</strong> {{ producto.cantidad }}</li>
+        <li><strong>Precio:</strong> ${{ '%.2f'|format(producto.precio|float) }}</li>
+    </ul>
+
+    <form method="post" class="d-flex gap-2">
+        <button class="btn btn-danger" type="submit">Si, eliminar</button>
+        <a class="btn btn-secondary" href="{{ url_for('mysql_productos_lista') }}">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

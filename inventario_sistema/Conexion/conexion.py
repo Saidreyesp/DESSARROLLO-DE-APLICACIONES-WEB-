@@ -75,6 +75,44 @@ class MySQLManager:
                 creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             """,
+            """
+            CREATE TABLE IF NOT EXISTS clientes (
+                id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+                cedula VARCHAR(20) NOT NULL UNIQUE,
+                nombres VARCHAR(120) NOT NULL,
+                telefono VARCHAR(20),
+                email VARCHAR(150),
+                direccion VARCHAR(180)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS facturas (
+                id_factura INT AUTO_INCREMENT PRIMARY KEY,
+                id_cliente INT NOT NULL,
+                fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                iva DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                CONSTRAINT fk_facturas_cliente
+                    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
+                    ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS detalle_factura (
+                id_detalle INT AUTO_INCREMENT PRIMARY KEY,
+                id_factura INT NOT NULL,
+                id_producto INT NOT NULL,
+                cantidad INT NOT NULL DEFAULT 1,
+                precio_unitario DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                CONSTRAINT fk_detalle_factura
+                    FOREIGN KEY (id_factura) REFERENCES facturas(id_factura)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT fk_detalle_producto
+                    FOREIGN KEY (id_producto) REFERENCES productos_mysql(id_producto)
+                    ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """,
         ]
 
         with self.connection() as conn:
@@ -98,6 +136,18 @@ class MySQLManager:
         with self.connection() as conn:
             cur = conn.cursor(dictionary=True)
             cur.execute(f"SELECT * FROM {table_name} ORDER BY {id_column} DESC")
+            return cur.fetchall()
+
+    def fetch_where(self, table_name, where_clause, params=(), order_by=None, limit=None):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            query = f"SELECT * FROM {table_name} WHERE {where_clause}"
+            if order_by:
+                query += f" ORDER BY {order_by}"
+            if limit is not None:
+                query += " LIMIT %s"
+                params = tuple(params) + (int(limit),)
+            cur.execute(query, params)
             return cur.fetchall()
 
     def insert_usuario(self, nombre, email, password):

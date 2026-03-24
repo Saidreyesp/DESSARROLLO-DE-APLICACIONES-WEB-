@@ -58,8 +58,6 @@
         border: 1px solid #C9A227;
         border-radius: 15px;
         padding: 1rem;
-        position: sticky;
-        top: 16px;
     }
     .bebidas-panel h3 {
         color: #C9A227;
@@ -73,6 +71,21 @@
     .bebida-item:last-child { border-bottom: 0; }
     .bebida-nombre { color: #F5F1E8; font-weight: 700; }
     .bebida-precio { color: #C9A227; font-weight: 700; }
+    .carrito-panel {
+        background: #1E1E1E;
+        border: 1px solid #C9A227;
+        border-radius: 15px;
+        padding: 1rem;
+        position: sticky;
+        top: 16px;
+    }
+    .carrito-panel h3 { color: #C9A227; font-family: 'Playfair Display', serif; }
+    .carrito-item-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 0; border-bottom: 1px solid #2f2f2f; font-size: 0.88rem;
+    }
+    .carrito-item-row:last-child { border-bottom: none; }
+    .carrito-total { color: #C9A227; font-weight: 800; font-size: 1.1rem; }
 </style>
 
 <div class="header-menu shadow">
@@ -81,9 +94,7 @@
             <h2>🍽️ Menú de Platos</h2>
             <p>Deléitate con nuestros platos tradicionales ecuatorianos</p>
         </div>
-        <div class="col-md-4 text-end">
-            <a href="/producto/nuevo" class="btn btn-light btn-lg shadow-sm">➕ Nuevo Plato</a>
-        </div>
+
     </div>
 </div>
 
@@ -122,7 +133,15 @@
                 </div>
                 
                 <div class="botones-accion mt-3 d-flex gap-2">
-                    <a href="/plato/{{ p.nombre }}" class="btn btn-outline-primary btn-sm w-100">👁️ Ver</a>
+                    <a href="/plato/{{ p.nombre }}" class="btn btn-outline-secondary btn-sm">👁️ Ver</a>
+                    {% if p.cantidad > 0 %}
+                    <button class="btn btn-sm fw-bold w-100"
+                        style="background:#C9A227;border-color:#C9A227;color:#121212;"
+                        onclick="quickAdd({{ p.id | tojson }}, {{ p.nombre | tojson }}, {{ p.precio | float }})"
+                    >🛒 Añadir</button>
+                    {% else %}
+                    <button class="btn btn-sm btn-secondary w-100" disabled>Agotado</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -132,6 +151,25 @@
     </div>
 
     <div class="col-lg-4">
+        <div class="carrito-panel mb-4">
+            <h3 class="mb-3">🛒 Mi Pedido</h3>
+            <div id="miniCarritoItems">
+                <p id="carritoVacioMsg" style="color:#888; font-size:0.9rem;">Aún no añadiste nada.</p>
+            </div>
+            <hr style="border-color:#3a3a3a; margin:10px 0;">
+            <div class="d-flex justify-content-between mb-2">
+                <span style="color:#aaa; font-size:0.88rem;">IVA (15%):</span>
+                <span id="miniIva" style="color:#aaa; font-size:0.88rem;">$0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="carrito-total">Total:</span>
+                <span class="carrito-total" id="miniTotal">$0.00</span>
+            </div>
+            <a href="/carrito" class="btn w-100 fw-bold" style="background:#C9A227;border-color:#C9A227;color:#121212;">
+                ✅ Ver carrito y pedir
+            </a>
+        </div>
+
         <aside class="bebidas-panel">
             <h3>Bebidas</h3>
             {% if bebidas %}
@@ -142,7 +180,13 @@
                             <div class="bebida-nombre">{{ b.nombre }}</div>
                             <small style="color:#d8d1c7;">{{ b.descripcion or 'Bebida disponible.' }}</small>
                         </div>
-                        <span class="bebida-precio">${{ "%.2f"|format(b.precio) }}</span>
+                        <div class="text-end">
+                            <div class="bebida-precio">${{ "%.2f"|format(b.precio) }}</div>
+                            {% if b.cantidad > 0 %}
+                            <button class="btn btn-sm mt-1" style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:0.75rem;padding:2px 8px;"
+                                onclick="quickAdd({{ b.id | tojson }}, {{ b.nombre | tojson }}, {{ b.precio | float }})">+ Añadir</button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -159,4 +203,74 @@
     <a href="/producto/nuevo" class="btn btn-primary mt-3">Agregar el Primer Plato</a>
 </div>
 {% endif %}
+
+<div id="addedToast" style="
+    display:none; position:fixed; bottom:28px; right:28px; z-index:9999;
+    background:#C9A227; color:#121212; font-weight:700;
+    padding:12px 22px; border-radius:12px;
+    box-shadow:0 4px 18px rgba(0,0,0,0.4);
+    font-size:0.95rem;
+">🛒 ¡Añadido al carrito!</div>
+
+<script>
+var KEY = 'carrito_alexandra';
+
+function getCarrito(){ var r=localStorage.getItem(KEY); return r?JSON.parse(r):[]; }
+function saveCarrito(c){ localStorage.setItem(KEY,JSON.stringify(c)); if(window.actualizarCartBadge) window.actualizarCartBadge(); }
+
+function quickAdd(id, nombre, precio){
+    var c = getCarrito();
+    var ex = c.find(function(x){ return x.id===id; });
+    if(ex){ ex.cantidad += 1; } else { c.push({id:id, nombre:nombre, precio:precio, cantidad:1}); }
+    saveCarrito(c);
+    renderMini();
+    showToast();
+}
+
+function quitarItem(id){
+    var c = getCarrito().filter(function(x){ return x.id!==id; });
+    saveCarrito(c);
+    renderMini();
+}
+
+function renderMini(){
+    var c = getCarrito();
+    var container = document.getElementById('miniCarritoItems');
+    var vacioMsg = document.getElementById('carritoVacioMsg');
+    if(!container) return;
+    if(c.length===0){
+        container.innerHTML = '<p style="color:#888; font-size:0.9rem;">Aún no añadiste nada.</p>';
+        document.getElementById('miniTotal').textContent = '$0.00';
+        document.getElementById('miniIva').textContent = '$0.00';
+        return;
+    }
+    var html = '';
+    var sub = 0;
+    c.forEach(function(item){
+        var st = item.precio * item.cantidad;
+        sub += st;
+        html += '<div class="carrito-item-row">' +
+            '<span style="color:#F5F1E8; max-width:55%;">' + item.nombre + ' <span style="color:#aaa;">x'+item.cantidad+'</span></span>' +
+            '<div class="d-flex align-items-center gap-2">' +
+                '<span style="color:#C9A227;">$'+st.toFixed(2)+'</span>' +
+                '<button onclick="quitarItem('+JSON.stringify(item.id)+')" style="background:none;border:none;color:#888;cursor:pointer;font-size:1rem;padding:0;line-height:1;">✕</button>' +
+            '</div>' +
+        '</div>';
+    });
+    container.innerHTML = html;
+    var iva = sub * 0.15;
+    document.getElementById('miniIva').textContent = '$'+(iva).toFixed(2);
+    document.getElementById('miniTotal').textContent = '$'+(sub+iva).toFixed(2);
+}
+
+var toastTimer;
+function showToast(){
+    var t = document.getElementById('addedToast');
+    t.style.display='block';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.style.display='none'; }, 1800);
+}
+
+renderMini();
+</script>
 {% endblock %}

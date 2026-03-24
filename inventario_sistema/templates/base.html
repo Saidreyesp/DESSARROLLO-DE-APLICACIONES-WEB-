@@ -94,6 +94,7 @@
                 <li><a href="{{ url_for('reportes') }}">📊 Reportes</a></li>
                     {% if has_mysql_panel %}
                     <li><a href="{{ url_for('mysql_panel') }}">🗄️ Panel MySQL</a></li>
+                    <li><a href="{{ url_for('mysql_productos_lista') }}">🧾 CRUD MySQL</a></li>
                     {% endif %}
                 <li><a href="{{ url_for('logout') }}">🚪 Cerrar Sesion</a></li>
                 {% else %}
@@ -105,9 +106,40 @@
             <li><a href="/buscar">🔍 Buscar</a></li>
             <li><a href="/reserva/Cliente">📅 Reservas</a></li>
             <li><a href="{{ url_for('trabaja_con_nosotros') }}">💼 Trabaja con Nosotros</a></li>
+            <li>
+                <a href="/carrito" style="position:relative;">
+                    🛒 Carrito
+                    <span id="cartBadge" style="
+                        display:none;
+                        position:absolute; top:6px; right:2px;
+                        background:#C9A227; color:#121212;
+                        border-radius:50%; font-size:0.62rem;
+                        width:17px; height:17px;
+                        line-height:17px; text-align:center;
+                        font-weight:800;
+                    ">0</span>
+                </a>
+            </li>
             {% endif %}
         </ul>
     </nav>
+    <script>
+    (function(){
+        function actualizarBadge(){
+            var raw = localStorage.getItem('carrito_alexandra');
+            var items = raw ? JSON.parse(raw) : [];
+            var total = items.reduce(function(s,i){ return s + (i.cantidad||1); }, 0);
+            var badge = document.getElementById('cartBadge');
+            if(badge){
+                badge.textContent = total;
+                badge.style.display = total > 0 ? 'inline-block' : 'none';
+            }
+        }
+        actualizarBadge();
+        window.addEventListener('storage', actualizarBadge);
+        window.actualizarCartBadge = actualizarBadge;
+    })();
+    </script>
 
     <!-- Contenido Principal -->
     <main>

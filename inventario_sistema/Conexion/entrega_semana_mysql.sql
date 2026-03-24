@@ -14,7 +14,7 @@ USE comedor_alexandra;
 CREATE TABLE IF NOT EXISTS usuarios (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(120) NOT NULL,
-  mail VARCHAR(150) NOT NULL UNIQUE,
+  email VARCHAR(150) NOT NULL UNIQUE,
   password VARCHAR(255) NOT NULL,
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS reservas_mysql (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 3) DATOS INICIALES DE PRUEBA
-INSERT INTO usuarios (nombre, mail, password)
+INSERT INTO usuarios (nombre, email, password)
 VALUES
   ('Administrador', 'admin@comedoralexandra.com', 'admin123'),
   ('Alexandra Pianda', 'alexandra@comedoralexandra.com', 'clave_segura')
@@ -71,7 +71,7 @@ VALUES
 -- -------------------------
 
 -- INSERTAR
-INSERT INTO usuarios (nombre, mail, password)
+INSERT INTO usuarios (nombre, email, password)
 VALUES ('Usuario Prueba', 'prueba@correo.com', '123456');
 
 -- CONSULTAR
@@ -80,11 +80,11 @@ SELECT * FROM usuarios ORDER BY id_usuario DESC;
 -- ACTUALIZAR
 UPDATE usuarios
 SET nombre = 'Usuario Editado', password = 'nueva_clave_789'
-WHERE mail = 'prueba@correo.com';
+WHERE email = 'prueba@correo.com';
 
 -- ELIMINAR
 DELETE FROM usuarios
-WHERE mail = 'prueba@correo.com';
+WHERE email = 'prueba@correo.com';
 
 -- -------------------------
 -- TABLA: productos_mysql
