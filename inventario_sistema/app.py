@@ -94,6 +94,24 @@ def normalize_reserva_datetime(raw_value):
     return parsed.strftime('%Y-%m-%d %H:%M:%S')
 
 
+def normalize_cliente_nombre(nombre='', email='', telefono=''):
+    base = (nombre or '').strip()
+    if base:
+        return base
+
+    correo = (email or '').strip().lower()
+    if correo and '@' in correo:
+        alias = correo.split('@', 1)[0].replace('.', ' ').replace('_', ' ').strip()
+        if alias:
+            return alias.title()
+
+    tel = ''.join(ch for ch in (telefono or '') if ch.isdigit())
+    if tel:
+        return f'Cliente {tel[-4:]}'
+
+    return 'Cliente sin nombre'
+
+
 @login_manager.user_loader
 def load_user(user_id):
     try:
@@ -459,7 +477,10 @@ def confirmar_reserva():
     personas = (request.form.get('personas') or '').strip()
     fecha = (request.form.get('fecha_reserva') or '').strip()
     telefono = (request.form.get('telefono') or '').strip()
-    email = (request.form.get('email') or '').strip().lower()
+    email_usuario = (getattr(current_user, 'email', '') or '').strip().lower()
+    email_form = (request.form.get('email') or '').strip().lower()
+    email = email_usuario or email_form
+    nombre = normalize_cliente_nombre(nombre, email, telefono)
 
     if not all([nombre, personas, fecha, telefono, email]):
         flash('Completa todos los datos de la reserva.', 'error')
@@ -832,6 +853,7 @@ def mysql_reservas():
             personas = int(request.form.get('personas', 1))
             fecha_reserva_raw = request.form.get('fecha_reserva', '').strip()
             fecha_reserva = normalize_reserva_datetime(fecha_reserva_raw) if fecha_reserva_raw else None
+            cliente = normalize_cliente_nombre(cliente, email, telefono)
             mysql_manager.insert_reserva(cliente, telefono, email, personas, fecha_reserva)
             flash('Reserva creada en MySQL.', 'success')
         elif accion == 'eliminar':
