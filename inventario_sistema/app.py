@@ -143,7 +143,7 @@ def inject_business_data():
 with app.app_context():
     db.create_all()
 
-    # Mantiene en Render los platos y bebidas base sin borrar productos existentes.
+    # Mantiene en Render solo los platos solicitados (y la bebida base) sin agregar platos extra.
     menu_base = [
         (
             'Aguado',
@@ -151,7 +151,7 @@ with app.app_context():
             3.50,
             'Caldos',
             'Aguado de pollo.',
-            'https://source.unsplash.com/1200x900/?chicken,soup',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Chicken_soup.jpg/640px-Chicken_soup.jpg',
         ),
         (
             'Caldo de Pata',
@@ -159,7 +159,7 @@ with app.app_context():
             3.50,
             'Caldos',
             'Caldo de pata casero.',
-            'https://source.unsplash.com/1200x900/?beef,soup',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Beef_bone_broth.jpg/640px-Beef_bone_broth.jpg',
         ),
         (
             'Carne Asada',
@@ -167,7 +167,7 @@ with app.app_context():
             4.00,
             'Asados',
             'Carne asada al punto.',
-            'https://source.unsplash.com/1200x900/?grilled,beef',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carne_asada.jpg/640px-Carne_asada.jpg',
         ),
         (
             'Chuleta Asada',
@@ -175,7 +175,7 @@ with app.app_context():
             4.00,
             'Asados',
             'Chuleta asada a la parrilla.',
-            'https://source.unsplash.com/1200x900/?grilled,pork',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Grilled_pork_chop.jpg/640px-Grilled_pork_chop.jpg',
         ),
         (
             'Pollo Asado',
@@ -191,7 +191,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Pollo al jugo con salsa casera.',
-            'https://source.unsplash.com/1200x900/?chicken,stew',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Cooked_chicken.jpg/640px-Cooked_chicken.jpg',
         ),
         (
             'Caldo de Gallina',
@@ -215,7 +215,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Lengua guisada en salsa.',
-            'https://source.unsplash.com/1200x900/?beef,stew,plate',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Beef_tongue_stew.jpg/640px-Beef_tongue_stew.jpg',
         ),
         (
             'Seco de Gallina',
