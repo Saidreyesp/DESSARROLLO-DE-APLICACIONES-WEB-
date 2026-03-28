@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Editar' if modo == 'editar' else 'Nuevo' }} Producto MySQL{% endblock %}
+
+{% block content %}
+<div class="card p-4" style="max-width: 760px; margin: 0 auto;">
+    <h2>{{ 'Editar' if modo == 'editar' else 'Nuevo' }} Producto</h2>
+    <p class="text-muted">Completa los campos para guardar en MySQL.</p>
+
+    <form method="post" class="row g-3">
+        <div class="col-12">
+            <label class="form-label">Nombre</label>
+            <input class="form-control" type="text" name="nombre" required maxlength="120"
+                   value="{{ producto.nombre if producto.nombre is defined else producto.get('nombre', '') }}">
+        </div>
+
+        <div class="col-md-6">
+            <label class="form-label">Categoria</label>
+            <input class="form-control" type="text" name="categoria" maxlength="80"
+                   value="{{ producto.categoria if producto.categoria is defined else producto.get('categoria', '') }}">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Cantidad</label>
+            <input class="form-control" type="number" name="cantidad" min="0" required
+                   value="{{ producto.cantidad if producto.cantidad is defined else producto.get('cantidad', 0) }}">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Precio</label>
+            <input class="form-control" type="number" name="precio" min="0" step="0.01" required
+                   value="{{ producto.precio if producto.precio is defined else producto.get('precio', 0) }}">
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+            <button class="btn btn-primary" type="submit">Guardar</button>
+            <a class="btn btn-secondary" href="{{ url_for('mysql_productos_lista') }}">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

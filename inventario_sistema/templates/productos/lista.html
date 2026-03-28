@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}CRUD Productos MySQL{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="mb-1">CRUD Productos MySQL</h2>
+        <p class="mb-0">Gestion completa de productos conectados a MySQL.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a class="btn btn-primary" href="{{ url_for('mysql_producto_nuevo') }}">Nuevo Producto</a>
+        <a class="btn btn-secondary" href="{{ url_for('mysql_productos_reporte_pdf') }}">Descargar PDF</a>
+    </div>
+</div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <small>Total productos</small>
+            <h4 class="mb-0">{{ total_items }}</h4>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <small>Stock total</small>
+            <h4 class="mb-0">{{ total_stock }}</h4>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <small>Valor inventario</small>
+            <h4 class="mb-0">${{ '%.2f'|format(total_valor) }}</h4>
+        </div>
+    </div>
+</div>
+
+<div class="card p-0 overflow-hidden">
+    <table class="table table-dark table-striped table-hover mb-0">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Categoria</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in productos %}
+            <tr>
+                <td>{{ p.id_producto }}</td>
+                <td>{{ p.nombre }}</td>
+                <td>{{ p.categoria or '-' }}</td>
+                <td>{{ p.cantidad }}</td>
+                <td>${{ '%.2f'|format(p.precio|float) }}</td>
+                <td class="d-flex gap-2">
+                    <a class="btn btn-sm btn-primary" href="{{ url_for('mysql_producto_editar', id_producto=p.id_producto) }}">Editar</a>
+                    <a class="btn btn-sm btn-danger" href="{{ url_for('mysql_producto_eliminar', id_producto=p.id_producto) }}">Eliminar</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6" class="text-center py-4">No hay productos registrados en MySQL.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
