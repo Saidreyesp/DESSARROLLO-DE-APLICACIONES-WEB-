@@ -453,7 +453,9 @@ def reserva(cliente):
 @app.route('/reserva/confirmar', methods=['POST'])
 @login_required
 def confirmar_reserva():
-    nombre = (request.form.get('cliente') or '').strip()
+    nombre_form = (request.form.get('cliente') or '').strip()
+    nombre_usuario = (getattr(current_user, 'nombre', '') or '').strip()
+    nombre = (nombre_usuario or nombre_form).strip()
     personas = (request.form.get('personas') or '').strip()
     fecha = (request.form.get('fecha_reserva') or '').strip()
     telefono = (request.form.get('telefono') or '').strip()
@@ -487,7 +489,7 @@ def confirmar_reserva():
         flash(f'La reserva se guardo localmente, pero no se pudo enviar a MySQL: {exc}', 'error')
         return render_template('reserva.html', cliente=nombre, email=email, negocio_name=BUSINESS_NAME)
 
-    mensaje_exito = f'Gracias {nombre}. Tu reserva para {personas} personas el dia {fecha_mysql} ha sido confirmada correctamente y enviada a HeidiSQL.'
+    mensaje_exito = f'Gracias por tu reserva, {nombre}. Tu reserva para {personas} personas el dia {fecha_mysql} ha sido confirmada correctamente y enviada a HeidiSQL.'
     return render_template('reserva.html', cliente=nombre, email=email, mensaje=mensaje_exito, negocio_name=BUSINESS_NAME)
 
 

@@ -22,7 +22,7 @@
                         <!-- Nombre completo del cliente -->
                         <div class="mb-3">
                             <label for="cliente" class="form-label">Nombre Completo:</label>
-                            <input type="text" class="form-control form-control-lg" id="cliente" name="cliente" value="{{ cliente }}" required>
+                            <input type="text" class="form-control form-control-lg" id="cliente" name="cliente" value="{{ cliente }}" readonly required>
                         </div>
 
                         <!-- Número de personas -->
@@ -46,7 +46,7 @@
                         <!-- Correo electrónico -->
                         <div class="mb-3">
                             <label for="email" class="form-label">Correo Electrónico:</label>
-                            <input type="email" class="form-control form-control-lg" id="email" name="email" value="{{ email or '' }}" required>
+                            <input type="email" class="form-control form-control-lg" id="email" name="email" value="{{ email or '' }}" readonly required>
                         </div>
 
                         <!-- Botón de confirmación -->
