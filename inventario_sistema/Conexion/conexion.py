@@ -1,16 +1,51 @@
+import json
 import os
 from contextlib import contextmanager
+from urllib.parse import unquote, urlparse
 
 
 class MySQLManager:
     """Gestiona conexion, creacion de tablas y operaciones CRUD en MySQL."""
 
+    DEFAULT_HOST = "trolley.proxy.rlwy.net"
+    DEFAULT_USER = "root"
+    DEFAULT_PASSWORD = "NmDTiUHKZaBALGwDUvSiSqvXGIBOODJs"
+    DEFAULT_DATABASE = "railway"
+    DEFAULT_PORT = 14574
+
     def __init__(self):
-        self.host = os.getenv("MYSQL_HOST", "127.0.0.1")
-        self.user = os.getenv("MYSQL_USER", "root")
-        self.password = os.getenv("MYSQL_PASSWORD", "")
-        self.database = os.getenv("MYSQL_DATABASE", "comedor_alexandra")
-        self.port = int(os.getenv("MYSQL_PORT", "3306"))
+        self.host = self.DEFAULT_HOST
+        self.user = self.DEFAULT_USER
+        self.password = self.DEFAULT_PASSWORD
+        self.database = self.DEFAULT_DATABASE
+        self.port = self.DEFAULT_PORT
+
+        # Railway puede entregar credenciales como URL completa.
+        mysql_url = os.getenv("MYSQL_URL", "").strip()
+        if mysql_url:
+            parsed = urlparse(mysql_url)
+            if parsed.scheme.startswith("mysql"):
+                self.host = parsed.hostname or self.host
+                self.user = unquote(parsed.username or self.user)
+                self.password = unquote(parsed.password or self.password)
+                self.database = (parsed.path or "/").lstrip("/") or self.database
+                if parsed.port:
+                    self.port = int(parsed.port)
+
+        # Variables individuales siempre tienen prioridad si existen.
+        self.host = os.getenv("MYSQL_HOST", self.host)
+        self.user = os.getenv("MYSQL_USER", self.user)
+        self.password = os.getenv("MYSQL_PASSWORD", self.password)
+        self.database = os.getenv("MYSQL_DATABASE", self.database)
+        self.port = int(os.getenv("MYSQL_PORT", str(self.port)))
+
+        # Evita errores comunes cuando el sistema tiene MYSQL_HOST=127.0.0.1 global.
+        if self.host.strip().lower() in {"127.0.0.1", "localhost"} and self.port == 3306:
+            self.host = self.DEFAULT_HOST
+            self.user = self.DEFAULT_USER
+            self.password = self.DEFAULT_PASSWORD
+            self.database = self.DEFAULT_DATABASE
+            self.port = self.DEFAULT_PORT
 
     def _import_connector(self):
         try:
@@ -23,7 +58,7 @@ class MySQLManager:
     def connection(self):
         connector = self._import_connector()
         if connector is None:
-            raise RuntimeError("mysql-connector-python no esta instalado.")
+            raise RuntimeError("mysql-connector-python no esta instalado. Ejecuta: pip install mysql-connector-python")
 
         conn = connector.connect(
             host=self.host,
@@ -31,6 +66,7 @@ class MySQLManager:
             password=self.password,
             database=self.database,
             port=self.port,
+            connection_timeout=10,
         )
         try:
             yield conn
@@ -70,6 +106,7 @@ class MySQLManager:
                 id_reserva INT AUTO_INCREMENT PRIMARY KEY,
                 cliente VARCHAR(120) NOT NULL,
                 telefono VARCHAR(30),
+                email VARCHAR(150),
                 personas INT NOT NULL DEFAULT 1,
                 fecha_reserva DATETIME,
                 creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -93,6 +130,8 @@ class MySQLManager:
                 subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
                 iva DECIMAL(10,2) NOT NULL DEFAULT 0.00,
                 total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                metodo_pago VARCHAR(40) NOT NULL DEFAULT 'Efectivo',
+                detalle_pago TEXT NULL,
                 CONSTRAINT fk_facturas_cliente
                     FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
                     ON UPDATE CASCADE
@@ -129,6 +168,21 @@ class MySQLManager:
                 cur.execute("ALTER TABLE usuarios ADD COLUMN email VARCHAR(150) NULL")
                 cur.execute("UPDATE usuarios SET email = mail WHERE email IS NULL")
                 cur.execute("ALTER TABLE usuarios MODIFY email VARCHAR(150) NOT NULL")
+
+            cur.execute("SHOW COLUMNS FROM facturas LIKE 'metodo_pago'")
+            col_metodo_pago = cur.fetchone()
+            if not col_metodo_pago:
+                cur.execute("ALTER TABLE facturas ADD COLUMN metodo_pago VARCHAR(40) NOT NULL DEFAULT 'Efectivo'")
+
+            cur.execute("SHOW COLUMNS FROM facturas LIKE 'detalle_pago'")
+            col_detalle_pago = cur.fetchone()
+            if not col_detalle_pago:
+                cur.execute("ALTER TABLE facturas ADD COLUMN detalle_pago TEXT NULL")
+
+            cur.execute("SHOW COLUMNS FROM reservas_mysql LIKE 'email'")
+            col_reserva_email = cur.fetchone()
+            if not col_reserva_email:
+                cur.execute("ALTER TABLE reservas_mysql ADD COLUMN email VARCHAR(150) NULL AFTER telefono")
 
             conn.commit()
 
@@ -186,6 +240,122 @@ class MySQLManager:
             )
             return cur.fetchone()
 
+    def get_cliente_by_cedula(self, cedula):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                "SELECT id_cliente, cedula, nombres, telefono, email, direccion FROM clientes WHERE cedula=%s",
+                (cedula,),
+            )
+            return cur.fetchone()
+
+    def get_producto_by_nombre(self, nombre):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                "SELECT id_producto, nombre, categoria, cantidad, precio FROM productos_mysql WHERE nombre=%s LIMIT 1",
+                (nombre,),
+            )
+            return cur.fetchone()
+
+    def ensure_cliente(self, cedula, nombres, telefono='', email='', direccion=''):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute("SELECT id_cliente FROM clientes WHERE cedula=%s", (cedula,))
+            row = cur.fetchone()
+            if row:
+                cur = conn.cursor()
+                cur.execute(
+                    "UPDATE clientes SET nombres=%s, telefono=%s, email=%s, direccion=%s WHERE id_cliente=%s",
+                    (nombres, telefono, email, direccion, row['id_cliente']),
+                )
+                conn.commit()
+                return row['id_cliente']
+
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO clientes (cedula, nombres, telefono, email, direccion) VALUES (%s, %s, %s, %s, %s)",
+                (cedula, nombres, telefono, email, direccion),
+            )
+            conn.commit()
+            return cur.lastrowid
+
+    def ensure_producto_mysql(self, nombre, categoria, cantidad, precio):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                "SELECT id_producto FROM productos_mysql WHERE nombre=%s LIMIT 1",
+                (nombre,),
+            )
+            row = cur.fetchone()
+            if row:
+                cur = conn.cursor()
+                cur.execute(
+                    "UPDATE productos_mysql SET categoria=%s, cantidad=%s, precio=%s WHERE id_producto=%s",
+                    (categoria, cantidad, precio, row['id_producto']),
+                )
+                conn.commit()
+                return row['id_producto']
+
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO productos_mysql (nombre, categoria, cantidad, precio) VALUES (%s, %s, %s, %s)",
+                (nombre, categoria, cantidad, precio),
+            )
+            conn.commit()
+            return cur.lastrowid
+
+    def sync_menu_productos(self, productos):
+        synced_ids = []
+        for producto in productos:
+            synced_ids.append(
+                self.ensure_producto_mysql(
+                    producto.get('nombre', ''),
+                    producto.get('categoria', ''),
+                    int(producto.get('cantidad') or 0),
+                    float(producto.get('precio') or 0),
+                )
+            )
+        return synced_ids
+
+    def crear_pedido(self, usuario, items, metodo_pago='Efectivo', detalle_pago=None):
+        if not items:
+            raise ValueError('El pedido no contiene productos.')
+
+        cedula = f"USR-{usuario.id_usuario}"
+        id_cliente = self.ensure_cliente(cedula, usuario.nombre, email=usuario.email)
+
+        subtotal = round(sum(float(item['precio']) * int(item['cantidad']) for item in items), 2)
+        iva = round(subtotal * 0.15, 2)
+        total = round(subtotal + iva, 2)
+
+        detalle_pago_json = json.dumps(detalle_pago or {}, ensure_ascii=True)
+
+        with self.connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO facturas (id_cliente, subtotal, iva, total, metodo_pago, detalle_pago) VALUES (%s, %s, %s, %s, %s, %s)",
+                (id_cliente, subtotal, iva, total, metodo_pago, detalle_pago_json),
+            )
+            id_factura = cur.lastrowid
+
+            for item in items:
+                cur.execute(
+                    "INSERT INTO detalle_factura (id_factura, id_producto, cantidad, precio_unitario) VALUES (%s, %s, %s, %s)",
+                    (id_factura, item['id_producto'], int(item['cantidad']), float(item['precio'])),
+                )
+
+            conn.commit()
+
+        return {
+            'id_factura': id_factura,
+            'subtotal': subtotal,
+            'iva': iva,
+            'total': total,
+            'metodo_pago': metodo_pago,
+            'detalle_pago': detalle_pago or {},
+        }
+
     def delete_usuario(self, id_usuario):
         with self.connection() as conn:
             cur = conn.cursor()
@@ -216,21 +386,21 @@ class MySQLManager:
             cur.execute("DELETE FROM productos_mysql WHERE id_producto=%s", (id_producto,))
             conn.commit()
 
-    def insert_reserva(self, cliente, telefono, personas, fecha_reserva):
+    def insert_reserva(self, cliente, telefono, email, personas, fecha_reserva):
         with self.connection() as conn:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO reservas_mysql (cliente, telefono, personas, fecha_reserva) VALUES (%s, %s, %s, %s)",
-                (cliente, telefono, personas, fecha_reserva),
+                "INSERT INTO reservas_mysql (cliente, telefono, email, personas, fecha_reserva) VALUES (%s, %s, %s, %s, %s)",
+                (cliente, telefono, email, personas, fecha_reserva),
             )
             conn.commit()
 
-    def update_reserva(self, id_reserva, cliente, telefono, personas, fecha_reserva):
+    def update_reserva(self, id_reserva, cliente, telefono, email, personas, fecha_reserva):
         with self.connection() as conn:
             cur = conn.cursor()
             cur.execute(
-                "UPDATE reservas_mysql SET cliente=%s, telefono=%s, personas=%s, fecha_reserva=%s WHERE id_reserva=%s",
-                (cliente, telefono, personas, fecha_reserva, id_reserva),
+                "UPDATE reservas_mysql SET cliente=%s, telefono=%s, email=%s, personas=%s, fecha_reserva=%s WHERE id_reserva=%s",
+                (cliente, telefono, email, personas, fecha_reserva, id_reserva),
             )
             conn.commit()
 

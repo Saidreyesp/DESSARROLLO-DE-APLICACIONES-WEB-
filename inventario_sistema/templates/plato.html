@@ -69,7 +69,7 @@
                             <input type="number" id="cantidadCarrito" class="form-control form-control-sm text-center" value="1" min="1" max="{{ plato.cantidad }}">
                             <button class="btn btn-outline-secondary btn-sm" type="button" onclick="cambiarCantidad(1)">+</button>
                         </div>
-                        <button class="btn fw-bold" onclick="agregarAlCarrito()" style="background:#C9A227;border-color:#C9A227;color:#121212;">
+                        <button type="button" id="btnAgregarPlato" class="btn fw-bold" onclick="agregarAlCarrito()" style="background:#C9A227;border-color:#C9A227;color:#121212;">
                             🛒 Añadir al carrito
                         </button>
                         <span id="carritoMsg" style="display:none; color:#28a745; font-weight:600;">✅ ¡Añadido!</span>
@@ -101,8 +101,19 @@
                         localStorage.setItem('carrito_alexandra', JSON.stringify(carrito));
                         if(window.actualizarCartBadge) window.actualizarCartBadge();
                         var msg = document.getElementById('carritoMsg');
+                        var btn = document.getElementById('btnAgregarPlato');
                         msg.style.display = 'inline';
+                        if(btn){
+                            btn.disabled = true;
+                            btn.textContent = 'Añadido';
+                        }
                         setTimeout(function(){ msg.style.display = 'none'; }, 2000);
+                        setTimeout(function(){
+                            if(btn){
+                                btn.disabled = false;
+                                btn.textContent = '🛒 Añadir al carrito';
+                            }
+                        }, 900);
                     }
                     </script>
 

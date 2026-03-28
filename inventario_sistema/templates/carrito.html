@@ -54,6 +54,16 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <hr style="border-color:#3a3a3a;">
+                    <div class="mb-3">
+                        <label for="metodoPago" class="form-label" style="color:#C9A227; font-weight:700;">Metodo de pago</label>
+                        <select id="metodoPago" class="form-select" onchange="renderCamposPago()">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Deuna">Deuna</option>
+                        </select>
+                    </div>
+                    <div id="camposPago" class="mb-3"></div>
                     <div class="d-flex justify-content-between align-items-center">
                         <span style="font-size:1.2rem; font-weight:700; color:#C9A227;">TOTAL:</span>
                         <span id="totalConIva" style="font-size:1.4rem; font-weight:800; color:#C9A227;">$0.00</span>
@@ -65,9 +75,9 @@
             <div class="d-flex gap-3 flex-wrap mb-5">
                 <a href="/menu" class="btn btn-secondary">📋 Seguir pidiendo</a>
                 <button class="btn btn-outline-danger" onclick="vaciarCarrito()">🗑️ Vaciar carrito</button>
-                <button class="btn fw-bold" onclick="hacerPedido()"
+                <button class="btn fw-bold" onclick="hacerPedido(this)"
                     style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:1.05rem;">
-                    ✅ Hacer Pedido
+                    Pagar carrito
                 </button>
             </div>
         </div>
@@ -79,15 +89,11 @@
             justify-content:center; align-items:center;
         ">
             <div class="card p-4" style="max-width:460px; width:92%;">
-                <h4 style="color:#C9A227;">🎉 ¡Pedido listo!</h4>
-                <p class="mt-2">Revisa tu pedido y envíalo por WhatsApp para confirmarlo con el restaurante.</p>
+                <h4 style="color:#C9A227;">🎉 ¡Pedido enviado!</h4>
+                <p class="mt-2">Tu pedido fue guardado directamente en MySQL para revisarlo desde HeidiSQL.</p>
                 <div id="resumenPedido" class="mt-3 mb-3" style="font-size:0.9rem; background:#2a2a2a; border-radius:8px; padding:12px;"></div>
-                <button class="btn fw-bold w-100 mb-2" onclick="irAWhatsApp()"
-                    style="background:#25D366;border-color:#25D366;color:#fff;font-size:1.05rem;">
-                    📲 Enviar pedido por WhatsApp
-                </button>
                 <button class="btn btn-secondary w-100" onclick="cerrarModal()">
-                    Cerrar
+                    Cancelar
                 </button>
             </div>
         </div>
@@ -173,39 +179,118 @@ function vaciarCarrito(){
     }
 }
 
-function hacerPedido(){
-    var items = getCarrito();
-    if(items.length === 0) return;
-    var subtotal = items.reduce(function(s,i){ return s + i.precio*i.cantidad; }, 0);
+function renderCamposPago(){
+    var metodo = document.getElementById('metodoPago').value;
+    var contenedor = document.getElementById('camposPago');
+    if(!contenedor) return;
 
-    // Construir mensaje para WhatsApp
-    var lineasTexto = items.map(function(i){
-        return '• ' + i.nombre + ' x' + i.cantidad + '  →  $' + (i.precio*i.cantidad).toFixed(2);
-    }).join('\n');
-    var msgWA = '🍽️ *Pedido - Comedor Alexandra*\n\n' + lineasTexto + '\n\n*Total a pagar: $' + subtotal.toFixed(2) + '*';
+    if(metodo === 'Efectivo'){
+        contenedor.innerHTML =
+            '<label for="montoEntrega" class="form-label" style="color:#d8d1c7;">Monto con el que pagas</label>' +
+            '<input id="montoEntrega" class="form-control" placeholder="Ej. 10.00">';
+        return;
+    }
 
-    // Mostrar resumen en modal (HTML)
-    var lineasHtml = items.map(function(i){
-        return '• ' + i.nombre + ' x' + i.cantidad + '  →  $' + (i.precio*i.cantidad).toFixed(2);
-    }).join('<br>');
-    document.getElementById('resumenPedido').innerHTML =
-        lineasHtml + '<hr style="border-color:#444;">' +
-        '<strong>Total a pagar: $' + subtotal.toFixed(2) + '</strong>';
+    if(metodo === 'Transferencia'){
+        contenedor.innerHTML =
+            '<div class="alert alert-secondary" style="font-size:0.9rem;">Banco: {{ negocio_bank }} | Cuenta: {{ negocio_account_number }} | Titular: {{ negocio_account_owner }}</div>' +
+            '<label for="bancoTransferencia" class="form-label" style="color:#d8d1c7;">Banco desde el que transfieres</label>' +
+            '<input id="bancoTransferencia" class="form-control mb-2" placeholder="Ej. Banco Pichincha">' +
+            '<label for="referenciaTransferencia" class="form-label" style="color:#d8d1c7;">Numero de referencia</label>' +
+            '<input id="referenciaTransferencia" class="form-control" placeholder="Ej. TRX123456">';
+        return;
+    }
 
-    // Guardar mensaje para el botón de WhatsApp
-    window._pedidoMsgWA = msgWA;
+    if(metodo === 'Tarjeta'){
+        contenedor.innerHTML =
+            '<label for="titularTarjeta" class="form-label" style="color:#d8d1c7;">Nombre del titular</label>' +
+            '<input id="titularTarjeta" class="form-control mb-2" placeholder="Como aparece en la tarjeta">' +
+            '<label for="ultimosDigitosTarjeta" class="form-label" style="color:#d8d1c7;">Ultimos 4 digitos</label>' +
+            '<input id="ultimosDigitosTarjeta" class="form-control" maxlength="4" placeholder="1234">';
+        return;
+    }
 
-    var modal = document.getElementById('modalPedido');
-    modal.style.display = 'flex';
-    localStorage.removeItem(KEY);
-    if(window.actualizarCartBadge) window.actualizarCartBadge();
+    contenedor.innerHTML =
+        '<label for="telefonoDeuna" class="form-label" style="color:#d8d1c7;">Telefono asociado a Deuna</label>' +
+        '<input id="telefonoDeuna" class="form-control" placeholder="0999999999">';
 }
 
-function irAWhatsApp(){
-    var phone = '593992884043';
-    var msg = window._pedidoMsgWA || '';
-    var url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
-    window.open(url, '_blank');
+function getDatosPago(){
+    var metodo = document.getElementById('metodoPago').value;
+    if(metodo === 'Efectivo'){
+        return { monto_entrega: (document.getElementById('montoEntrega') || {}).value || '' };
+    }
+    if(metodo === 'Transferencia'){
+        return {
+            banco: (document.getElementById('bancoTransferencia') || {}).value || '',
+            referencia: (document.getElementById('referenciaTransferencia') || {}).value || ''
+        };
+    }
+    if(metodo === 'Tarjeta'){
+        return {
+            titular: (document.getElementById('titularTarjeta') || {}).value || '',
+            ultimos_digitos: (document.getElementById('ultimosDigitosTarjeta') || {}).value || ''
+        };
+    }
+    return { telefono: (document.getElementById('telefonoDeuna') || {}).value || '' };
+}
+
+function hacerPedido(boton){
+    var items = getCarrito();
+    var metodoPago = document.getElementById('metodoPago').value;
+    var datosPago = getDatosPago();
+    if(items.length === 0) return;
+    if(boton){
+        boton.disabled = true;
+        boton.textContent = 'Enviando a HeidiSQL...';
+    }
+
+    fetch('{{ url_for("enviar_pedido") }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items, metodo_pago: metodoPago, datos_pago: datosPago })
+    })
+    .then(function(response){
+        return response.json().then(function(data){
+            return { status: response.status, data: data };
+        });
+    })
+    .then(function(result){
+        if(!result.data.ok){
+            throw new Error(result.data.message || 'No se pudo enviar el pedido.');
+        }
+
+        var factura = result.data.factura || {};
+        var subtotal = factura.subtotal || 0;
+        var iva = factura.iva || 0;
+        var total = factura.total || 0;
+        var lineasHtml = items.map(function(i){
+            return '• ' + i.nombre + ' x' + i.cantidad + '  →  $' + (i.precio*i.cantidad).toFixed(2);
+        }).join('<br>');
+
+        document.getElementById('resumenPedido').innerHTML =
+            '<strong>Factura #' + factura.id_factura + '</strong><br><br>' +
+            lineasHtml +
+            '<hr style="border-color:#444;">' +
+            '<strong>Metodo de pago: ' + (factura.metodo_pago || metodoPago) + '</strong><br>' +
+            '<strong>Subtotal: $' + Number(subtotal).toFixed(2) + '</strong><br>' +
+            '<strong>IVA: $' + Number(iva).toFixed(2) + '</strong><br>' +
+            '<strong>Total: $' + Number(total).toFixed(2) + '</strong>';
+
+        localStorage.removeItem(KEY);
+        if(window.actualizarCartBadge) window.actualizarCartBadge();
+        document.getElementById('modalPedido').style.display = 'flex';
+    })
+    .catch(function(error){
+        alert(error.message || 'No se pudo enviar el pedido.');
+    })
+    .finally(function(){
+        if(boton){
+            boton.disabled = false;
+            boton.textContent = 'Pagar carrito';
+        }
+        renderCarrito();
+    });
 }
 
 function cerrarModal(){
@@ -214,6 +299,7 @@ function cerrarModal(){
 }
 
 renderCarrito();
+renderCamposPago();
 </script>
 {% endif %}
 {% endblock %}

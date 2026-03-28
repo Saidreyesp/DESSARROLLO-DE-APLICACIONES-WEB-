@@ -1,8 +1,10 @@
+import os
 from datetime import datetime
+from functools import wraps
 from io import BytesIO
 from pathlib import Path
 
-from flask import Flask, flash, redirect, render_template, request, send_file, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, send_file, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from jinja2 import TemplateNotFound
 from dotenv import load_dotenv
@@ -20,7 +22,7 @@ from models.user import UsuarioLogin
 from services.producto_service import ProductoService
 
 BASE_DIR = Path(__file__).resolve().parent
-load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR / '.env', override=True)
 
 app = Flask(__name__)
 
@@ -34,6 +36,7 @@ BUSINESS_ACCOUNT_NUMBER = '2208978980'
 BUSINESS_ACCOUNT_OWNER = 'Alexandra Pianda'
 BUSINESS_RECEIPT_PHONE = '0992884043'
 BUSINESS_HR_EMAIL = 'saidreyes567@gmail.com'
+OWNER_EMAIL = os.getenv('OWNER_EMAIL', BUSINESS_HR_EMAIL).strip().lower()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventario.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -49,6 +52,24 @@ db.init_app(app)
 db_conexion = ConexionSQLite()
 mysql_manager = MySQLManager()
 producto_service = ProductoService(mysql_manager)
+
+
+def is_owner_user(user=None):
+    user = user or current_user
+    if not getattr(user, 'is_authenticated', False):
+        return False
+    return (getattr(user, 'email', '') or '').strip().lower() == OWNER_EMAIL
+
+
+def owner_required(view_func):
+    @wraps(view_func)
+    def wrapper(*args, **kwargs):
+        if not is_owner_user():
+            flash('Solo el titular puede acceder a esta seccion.', 'error')
+            return redirect(url_for('index'))
+        return view_func(*args, **kwargs)
+
+    return wrapper
 
 
 @login_manager.user_loader
@@ -74,7 +95,8 @@ def inject_business_data():
         'negocio_receipt_phone': BUSINESS_RECEIPT_PHONE,
         'negocio_hr_email': BUSINESS_HR_EMAIL,
         'has_auth_routes': True,
-        'has_mysql_panel': True,
+        'has_mysql_panel': is_owner_user(),
+        'owner_email': OWNER_EMAIL,
     }
 
 
@@ -118,6 +140,12 @@ with app.app_context():
         ]
         for nombre, cantidad, precio, categoria, descripcion, imagen in ejemplos:
             db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion, imagen)
+
+    try:
+        mysql_manager.crear_tablas()
+        mysql_manager.sync_menu_productos(db_conexion.obtener_todos_productos())
+    except Exception as exc:
+        print(f"Aviso: no se pudo sincronizar menu inicial con MySQL: {exc}")
 
 
 @app.route('/')
@@ -261,10 +289,11 @@ def trabaja_con_nosotros():
 def productos():
     productos_lista = db_conexion.obtener_todos_productos()
     bebidas = [p for p in productos_lista if (p.get('categoria') or '').strip().lower() == 'bebidas']
+    platos = [p for p in productos_lista if (p.get('categoria') or '').strip().lower() != 'bebidas']
     return render_template(
         'productos.html',
         productos=productos_lista,
-        platos=productos_lista,
+        platos=platos,
         bebidas=bebidas,
         negocio_name=BUSINESS_NAME,
     )
@@ -274,6 +303,95 @@ def productos():
 @login_required
 def carrito():
     return render_template('carrito.html', negocio_name=BUSINESS_NAME)
+
+
+@app.route('/pedido/enviar', methods=['POST'])
+@login_required
+def enviar_pedido():
+    payload = request.get_json(silent=True) or {}
+    raw_items = payload.get('items') or []
+    metodo_pago = str(payload.get('metodo_pago') or 'Efectivo').strip()
+    datos_pago = payload.get('datos_pago') or {}
+    metodos_validos = {'Efectivo', 'Transferencia', 'Tarjeta', 'Deuna'}
+
+    if not raw_items:
+        return jsonify({'ok': False, 'message': 'El carrito esta vacio.'}), 400
+
+    if metodo_pago not in metodos_validos:
+        return jsonify({'ok': False, 'message': 'Selecciona un metodo de pago valido.'}), 400
+
+    if not isinstance(datos_pago, dict):
+        return jsonify({'ok': False, 'message': 'Los datos de pago son invalidos.'}), 400
+
+    detalle_pago = {}
+    if metodo_pago == 'Efectivo':
+        monto_entrega = str(datos_pago.get('monto_entrega') or '').strip()
+        if not monto_entrega:
+            return jsonify({'ok': False, 'message': 'Ingresa el monto con el que vas a pagar.'}), 400
+        detalle_pago = {'monto_entrega': monto_entrega}
+    elif metodo_pago == 'Transferencia':
+        banco = str(datos_pago.get('banco') or '').strip()
+        referencia = str(datos_pago.get('referencia') or '').strip()
+        if not banco or not referencia:
+            return jsonify({'ok': False, 'message': 'Completa banco y numero de referencia para la transferencia.'}), 400
+        detalle_pago = {'banco': banco, 'referencia': referencia}
+    elif metodo_pago == 'Tarjeta':
+        titular = str(datos_pago.get('titular') or '').strip()
+        ultimos_digitos = str(datos_pago.get('ultimos_digitos') or '').strip()
+        if not titular or len(ultimos_digitos) != 4 or not ultimos_digitos.isdigit():
+            return jsonify({'ok': False, 'message': 'Ingresa el titular y los ultimos 4 digitos de la tarjeta.'}), 400
+        detalle_pago = {'titular': titular, 'ultimos_digitos': ultimos_digitos}
+    elif metodo_pago == 'Deuna':
+        telefono = str(datos_pago.get('telefono') or '').strip()
+        if len(telefono) < 8:
+            return jsonify({'ok': False, 'message': 'Ingresa el telefono asociado a Deuna.'}), 400
+        detalle_pago = {'telefono': telefono}
+
+    mysql_manager.crear_tablas()
+
+    items_pedido = []
+    for raw_item in raw_items:
+        try:
+            producto_id = int(raw_item.get('id'))
+            cantidad = int(raw_item.get('cantidad', 0))
+        except (TypeError, ValueError):
+            return jsonify({'ok': False, 'message': 'Hay productos invalidos en el carrito.'}), 400
+
+        if cantidad <= 0:
+            return jsonify({'ok': False, 'message': 'La cantidad debe ser mayor a cero.'}), 400
+
+        producto = db_conexion.obtener_producto(producto_id)
+        if not producto:
+            return jsonify({'ok': False, 'message': f'El producto con ID {producto_id} ya no existe.'}), 404
+
+        id_producto_mysql = mysql_manager.ensure_producto_mysql(
+            producto.get('nombre', ''),
+            producto.get('categoria', ''),
+            int(producto.get('cantidad') or 0),
+            float(producto.get('precio') or 0),
+        )
+
+        items_pedido.append(
+            {
+                'id_producto': id_producto_mysql,
+                'cantidad': cantidad,
+                'precio': float(producto.get('precio') or 0),
+                'nombre': producto.get('nombre', ''),
+            }
+        )
+
+    try:
+        factura = mysql_manager.crear_pedido(current_user, items_pedido, metodo_pago, detalle_pago)
+    except Exception as exc:
+        return jsonify({'ok': False, 'message': f'No se pudo guardar el pedido en MySQL: {exc}'}), 500
+
+    return jsonify(
+        {
+            'ok': True,
+            'message': 'Pedido enviado correctamente a HeidiSQL.',
+            'factura': factura,
+        }
+    )
 
 
 @app.route('/plato/<string:nombre>')
@@ -305,16 +423,23 @@ def buscar():
 @app.route('/reserva/<cliente>')
 @login_required
 def reserva(cliente):
-    return render_template('reserva.html', cliente=cliente, negocio_name=BUSINESS_NAME)
+    cliente_reserva = (cliente or getattr(current_user, 'nombre', '') or '').strip()
+    email_reserva = (getattr(current_user, 'email', '') or '').strip().lower()
+    return render_template('reserva.html', cliente=cliente_reserva, email=email_reserva, negocio_name=BUSINESS_NAME)
 
 
 @app.route('/reserva/confirmar', methods=['POST'])
 @login_required
 def confirmar_reserva():
-    nombre = request.form.get('cliente')
-    personas = request.form.get('personas')
-    fecha = request.form.get('fecha_reserva')
-    telefono = request.form.get('telefono')
+    nombre = (request.form.get('cliente') or '').strip()
+    personas = (request.form.get('personas') or '').strip()
+    fecha = (request.form.get('fecha_reserva') or '').strip()
+    telefono = (request.form.get('telefono') or '').strip()
+    email = (request.form.get('email') or '').strip().lower()
+
+    if not all([nombre, personas, fecha, telefono, email]):
+        flash('Completa todos los datos de la reserva.', 'error')
+        return redirect(url_for('reserva', cliente=nombre))
 
     save_json(
         {
@@ -323,11 +448,19 @@ def confirmar_reserva():
             'personas': personas,
             'fecha': fecha,
             'contacto': telefono,
+            'email': email,
         }
     )
 
-    mensaje_exito = f'Gracias {nombre}. Tu reserva para {personas} personas el dia {fecha} ha sido confirmada correctamente.'
-    return render_template('reserva.html', cliente=nombre, mensaje=mensaje_exito, negocio_name=BUSINESS_NAME)
+    try:
+        mysql_manager.crear_tablas()
+        mysql_manager.insert_reserva(nombre, telefono, email, int(personas), fecha)
+    except Exception as exc:
+        flash(f'La reserva se guardo localmente, pero no se pudo enviar a MySQL: {exc}', 'error')
+        return render_template('reserva.html', cliente=nombre, email=email, negocio_name=BUSINESS_NAME)
+
+    mensaje_exito = f'Gracias {nombre}. Tu reserva para {personas} personas el dia {fecha} ha sido confirmada correctamente y enviada a HeidiSQL.'
+    return render_template('reserva.html', cliente=nombre, email=email, mensaje=mensaje_exito, negocio_name=BUSINESS_NAME)
 
 
 @app.route('/producto/nuevo', methods=['GET', 'POST'])
@@ -436,6 +569,7 @@ def reportes():
 
 @app.route('/mysql/productos-crud')
 @login_required
+@owner_required
 def mysql_productos_lista():
     try:
         resumen = producto_service.resumen()
@@ -455,6 +589,7 @@ def mysql_productos_lista():
 
 @app.route('/mysql/productos-crud/nuevo', methods=['GET', 'POST'])
 @login_required
+@owner_required
 def mysql_producto_nuevo():
     form_data = {'nombre': '', 'categoria': '', 'cantidad': 0, 'precio': 0}
     if request.method == 'POST':
@@ -476,6 +611,7 @@ def mysql_producto_nuevo():
 
 @app.route('/mysql/productos-crud/editar/<int:id_producto>', methods=['GET', 'POST'])
 @login_required
+@owner_required
 def mysql_producto_editar(id_producto):
     producto = producto_service.obtener(id_producto)
     if not producto:
@@ -502,6 +638,7 @@ def mysql_producto_editar(id_producto):
 
 @app.route('/mysql/productos-crud/eliminar/<int:id_producto>', methods=['GET', 'POST'])
 @login_required
+@owner_required
 def mysql_producto_eliminar(id_producto):
     producto = producto_service.obtener(id_producto)
     if not producto:
@@ -521,6 +658,7 @@ def mysql_producto_eliminar(id_producto):
 
 @app.route('/mysql/productos-crud/reporte-pdf')
 @login_required
+@owner_required
 def mysql_productos_reporte_pdf():
     resumen = producto_service.resumen()
     productos_mysql = resumen['productos']
@@ -570,6 +708,7 @@ def listar_datos():
 
 @app.route('/mysql/panel')
 @login_required
+@owner_required
 def mysql_panel():
     ok, mensaje = mysql_manager.ping()
     usuarios = []
@@ -596,6 +735,7 @@ def mysql_panel():
 
 @app.route('/mysql/init', methods=['POST'])
 @login_required
+@owner_required
 def mysql_init():
     try:
         mysql_manager.crear_tablas()
@@ -607,6 +747,7 @@ def mysql_init():
 
 @app.route('/mysql/usuarios', methods=['POST'])
 @login_required
+@owner_required
 def mysql_usuarios():
     accion = request.form.get('accion', '').strip().lower()
     try:
@@ -629,6 +770,7 @@ def mysql_usuarios():
 
 @app.route('/mysql/productos', methods=['POST'])
 @login_required
+@owner_required
 def mysql_productos():
     accion = request.form.get('accion', '').strip().lower()
     try:
@@ -649,15 +791,17 @@ def mysql_productos():
 
 @app.route('/mysql/reservas', methods=['POST'])
 @login_required
+@owner_required
 def mysql_reservas():
     accion = request.form.get('accion', '').strip().lower()
     try:
         if accion == 'crear':
             cliente = request.form.get('cliente', '').strip()
             telefono = request.form.get('telefono', '').strip()
+            email = request.form.get('email', '').strip().lower()
             personas = int(request.form.get('personas', 1))
             fecha_reserva = request.form.get('fecha_reserva', '').strip() or None
-            mysql_manager.insert_reserva(cliente, telefono, personas, fecha_reserva)
+            mysql_manager.insert_reserva(cliente, telefono, email, personas, fecha_reserva)
             flash('Reserva creada en MySQL.', 'success')
         elif accion == 'eliminar':
             mysql_manager.delete_reserva(int(request.form.get('id_reserva', 0)))

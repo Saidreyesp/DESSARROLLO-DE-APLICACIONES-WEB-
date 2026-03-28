@@ -135,9 +135,9 @@
                 <div class="botones-accion mt-3 d-flex gap-2">
                     <a href="/plato/{{ p.nombre }}" class="btn btn-outline-secondary btn-sm">👁️ Ver</a>
                     {% if p.cantidad > 0 %}
-                    <button class="btn btn-sm fw-bold w-100"
+                    <button type="button" class="btn btn-sm fw-bold w-100"
                         style="background:#C9A227;border-color:#C9A227;color:#121212;"
-                        onclick="quickAdd({{ p.id | tojson }}, {{ p.nombre | tojson }}, {{ p.precio | float }})"
+                        onclick="quickAdd(this, {{ p.id | tojson }}, {{ p.nombre | tojson }}, {{ p.precio | float }})"
                     >🛒 Añadir</button>
                     {% else %}
                     <button class="btn btn-sm btn-secondary w-100" disabled>Agotado</button>
@@ -183,8 +183,8 @@
                         <div class="text-end">
                             <div class="bebida-precio">${{ "%.2f"|format(b.precio) }}</div>
                             {% if b.cantidad > 0 %}
-                            <button class="btn btn-sm mt-1" style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:0.75rem;padding:2px 8px;"
-                                onclick="quickAdd({{ b.id | tojson }}, {{ b.nombre | tojson }}, {{ b.precio | float }})">+ Añadir</button>
+                            <button type="button" class="btn btn-sm mt-1" style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:0.75rem;padding:2px 8px;"
+                                onclick="quickAdd(this, {{ b.id | tojson }}, {{ b.nombre | tojson }}, {{ b.precio | float }})">+ Añadir</button>
                             {% endif %}
                         </div>
                     </div>
@@ -218,13 +218,23 @@ var KEY = 'carrito_alexandra';
 function getCarrito(){ var r=localStorage.getItem(KEY); return r?JSON.parse(r):[]; }
 function saveCarrito(c){ localStorage.setItem(KEY,JSON.stringify(c)); if(window.actualizarCartBadge) window.actualizarCartBadge(); }
 
-function quickAdd(id, nombre, precio){
+function quickAdd(button, id, nombre, precio){
     var c = getCarrito();
     var ex = c.find(function(x){ return x.id===id; });
     if(ex){ ex.cantidad += 1; } else { c.push({id:id, nombre:nombre, precio:precio, cantidad:1}); }
     saveCarrito(c);
     renderMini();
     showToast();
+    if(button){
+        var original = button.dataset.originalLabel || button.textContent;
+        button.dataset.originalLabel = original;
+        button.textContent = 'Anadido';
+        button.disabled = true;
+        setTimeout(function(){
+            button.textContent = original;
+            button.disabled = false;
+        }, 900);
+    }
 }
 
 function quitarItem(id){

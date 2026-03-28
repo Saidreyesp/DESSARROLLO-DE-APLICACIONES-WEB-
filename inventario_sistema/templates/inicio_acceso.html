@@ -47,6 +47,35 @@
         font-size: 1.05rem;
         max-width: 34rem;
     }
+    .access-visual {
+        margin-top: 24px;
+        border-radius: 20px;
+        overflow: hidden;
+        min-height: 280px;
+        position: relative;
+        border: 1px solid rgba(201, 162, 39, 0.2);
+        background:
+            linear-gradient(180deg, rgba(18, 18, 18, 0.15), rgba(18, 18, 18, 0.78)),
+            url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
+        box-shadow: inset 0 -80px 120px rgba(0, 0, 0, 0.35);
+    }
+    .access-visual-copy {
+        position: absolute;
+        left: 24px;
+        right: 24px;
+        bottom: 22px;
+    }
+    .access-visual-copy h3 {
+        color: #fff4cc;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: clamp(1.8rem, 3vw, 2.6rem);
+        margin-bottom: 0.35rem;
+    }
+    .access-visual-copy p {
+        color: #f3ead9;
+        margin: 0;
+        max-width: 28rem;
+    }
     .access-points {
         display: grid;
         gap: 14px;
@@ -93,6 +122,36 @@
         color: #bfb3a1;
         font-size: 0.95rem;
     }
+    .feature-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+    }
+    .feature-card {
+        border-radius: 14px;
+        padding: 14px 12px;
+        border: 1px solid rgba(201, 162, 39, 0.16);
+        background: rgba(245, 241, 232, 0.04);
+        text-align: left;
+    }
+    .feature-card strong {
+        display: block;
+        color: #f6eddc;
+        margin-bottom: 4px;
+    }
+    .feature-card span {
+        color: #cabfae;
+        font-size: 0.92rem;
+    }
+    @media (max-width: 767px) {
+        .feature-strip {
+            grid-template-columns: 1fr;
+        }
+        .access-visual {
+            min-height: 220px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -101,31 +160,38 @@
     <div class="row g-4 access-grid align-items-stretch">
         <div class="col-lg-7">
             <div class="card access-hero p-4 p-md-5">
-                <span class="access-badge mb-3">Acceso protegido</span>
-                <h2 class="access-title mb-3">Ingresa al sistema del comedor</h2>
-                <p class="access-lead mb-0">Para ver el menu, comprar, registrar reservas y usar el CRUD de productos, primero debes iniciar sesion o crear tu cuenta.</p>
+                <span class="access-badge mb-3">Comedor Alexandra</span>
+                <h2 class="access-title mb-3">Bienvenido a una experiencia con sabor casero</h2>
+                <p class="access-lead mb-0">Explora nuestro menu, organiza tus pedidos y prepara tu reserva desde un espacio pensado para clientes del comedor.</p>
 
                 <div class="access-points">
                     <div class="access-point">
                         <span>1</span>
                         <div>
-                            <strong>Crea tu cuenta</strong><br>
-                            Usa tu nombre, correo y contrasena para registrarte en el sistema.
+                            <strong>Descubre el menu</strong><br>
+                            Revisa platos tradicionales, bebidas y opciones disponibles para tu proximo pedido.
                         </div>
                     </div>
                     <div class="access-point">
                         <span>2</span>
                         <div>
-                            <strong>Inicia sesion</strong><br>
-                            Accede con tus credenciales para entrar al panel del comedor.
+                            <strong>Reserva tu mesa</strong><br>
+                            Programa tu visita con tus datos y deja lista tu reserva en pocos pasos.
                         </div>
                     </div>
                     <div class="access-point">
                         <span>3</span>
                         <div>
-                            <strong>Gestiona y compra</strong><br>
-                            Consulta productos, agrega platos, reserva y administra informacion protegida.
+                            <strong>Compra y gestiona</strong><br>
+                            Agrega platos al carrito, elige tu metodo de pago y confirma tu pedido facilmente.
                         </div>
+                    </div>
+                </div>
+
+                <div class="access-visual">
+                    <div class="access-visual-copy">
+                        <h3>Noches con sazón, platos con identidad</h3>
+                        <p>Un espacio para descubrir sabores tradicionales, pedir con rapidez y reservar sin complicaciones.</p>
                     </div>
                 </div>
             </div>
@@ -133,16 +199,31 @@
 
         <div class="col-lg-5">
             <div class="card access-actions p-4 p-md-5 text-center">
-                <h3 class="mb-2" style="color:#f6eddc; font-family:'Cormorant Garamond', Georgia, serif; font-size:2rem;">Bienvenido</h3>
-                <p class="access-note mb-4">Selecciona una opcion para continuar.</p>
+                <h3 class="mb-2" style="color:#f6eddc; font-family:'Cormorant Garamond', Georgia, serif; font-size:2rem;">Empieza aqui</h3>
+                <p class="access-note mb-4">Inicia sesion o crea tu cuenta para entrar al entorno del comedor.</p>
 
                 <div class="d-grid gap-3">
                     <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Iniciar Sesion</a>
                     <a href="{{ url_for('registro') }}" class="btn btn-secondary btn-lg">Crear Cuenta</a>
                 </div>
 
+                <div class="feature-strip">
+                    <div class="feature-card">
+                        <strong>Pedidos</strong>
+                        <span>Agrega platos al carrito y paga con el metodo que prefieras.</span>
+                    </div>
+                    <div class="feature-card">
+                        <strong>Reservas</strong>
+                        <span>Organiza tu visita y deja registrada tu mesa en el sistema.</span>
+                    </div>
+                    <div class="feature-card">
+                        <strong>Atencion</strong>
+                        <span>Todo queda conectado para seguimiento desde el comedor.</span>
+                    </div>
+                </div>
+
                 <hr class="my-4">
-                <p class="access-note mb-0">Las rutas de menu, carrito, reservas y CRUD estan protegidas por autenticacion.</p>
+                <p class="access-note mb-0">Tu cuenta te permite guardar pedidos, registrar reservas y acceder a las funciones del sistema.</p>
             </div>
         </div>
     </div>
