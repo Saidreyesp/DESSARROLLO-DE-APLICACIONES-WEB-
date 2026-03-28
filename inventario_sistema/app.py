@@ -1,5 +1,6 @@
 from datetime import datetime
 from io import BytesIO
+from pathlib import Path
 
 from flask import Flask, flash, redirect, render_template, request, send_file, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
@@ -18,7 +19,8 @@ from models.conexion import ConexionSQLite
 from models.user import UsuarioLogin
 from services.producto_service import ProductoService
 
-load_dotenv()
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / '.env')
 
 app = Flask(__name__)
 
