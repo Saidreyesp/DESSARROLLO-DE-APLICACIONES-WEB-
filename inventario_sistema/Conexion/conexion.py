@@ -239,3 +239,24 @@ class MySQLManager:
             cur = conn.cursor()
             cur.execute("DELETE FROM reservas_mysql WHERE id_reserva=%s", (id_reserva,))
             conn.commit()
+
+    def insert_usuario_trabajo(self, nombre_completo, nombre_usuario, correo, telefono, password, cargo_interes):
+        with self.connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                """INSERT INTO usuarios_trabajo
+                   (nombre_completo, nombre_usuario, correo, telefono, password, cargo_interes)
+                   VALUES (%s, %s, %s, %s, %s, %s)""",
+                (nombre_completo, nombre_usuario, correo, telefono, password, cargo_interes),
+            )
+            conn.commit()
+
+    def get_usuarios_trabajo(self, limit=12):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                """SELECT nombre_completo, nombre_usuario, correo, telefono, cargo_interes, fecha_registro
+                   FROM usuarios_trabajo ORDER BY id DESC LIMIT %s""",
+                (limit,),
+            )
+            return cur.fetchall()
