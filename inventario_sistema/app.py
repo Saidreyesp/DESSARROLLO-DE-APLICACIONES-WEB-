@@ -72,6 +72,28 @@ def owner_required(view_func):
     return wrapper
 
 
+def normalize_reserva_datetime(raw_value):
+    value = (raw_value or '').strip()
+    if not value:
+        raise ValueError('Debes ingresar la fecha y hora de la reserva.')
+
+    parsed = None
+    for fmt in ('%Y-%m-%dT%H:%M', '%Y-%m-%d %H:%M', '%Y-%m-%d %H:%M:%S'):
+        try:
+            parsed = datetime.strptime(value, fmt)
+            break
+        except ValueError:
+            continue
+
+    if parsed is None:
+        raise ValueError('La fecha no tiene un formato valido. Usa fecha y hora reales.')
+
+    if parsed.year < 2000 or parsed.year > 2100:
+        raise ValueError('El anio de la reserva no es valido. Verifica la fecha ingresada.')
+
+    return parsed.strftime('%Y-%m-%d %H:%M:%S')
+
+
 @login_manager.user_loader
 def load_user(user_id):
     try:
@@ -441,12 +463,18 @@ def confirmar_reserva():
         flash('Completa todos los datos de la reserva.', 'error')
         return redirect(url_for('reserva', cliente=nombre))
 
+    try:
+        fecha_mysql = normalize_reserva_datetime(fecha)
+    except ValueError as exc:
+        flash(str(exc), 'error')
+        return redirect(url_for('reserva', cliente=nombre))
+
     save_json(
         {
             'tipo': 'RESERVA',
             'cliente': nombre,
             'personas': personas,
-            'fecha': fecha,
+            'fecha': fecha_mysql,
             'contacto': telefono,
             'email': email,
         }
@@ -454,12 +482,12 @@ def confirmar_reserva():
 
     try:
         mysql_manager.crear_tablas()
-        mysql_manager.insert_reserva(nombre, telefono, email, int(personas), fecha)
+        mysql_manager.insert_reserva(nombre, telefono, email, int(personas), fecha_mysql)
     except Exception as exc:
         flash(f'La reserva se guardo localmente, pero no se pudo enviar a MySQL: {exc}', 'error')
         return render_template('reserva.html', cliente=nombre, email=email, negocio_name=BUSINESS_NAME)
 
-    mensaje_exito = f'Gracias {nombre}. Tu reserva para {personas} personas el dia {fecha} ha sido confirmada correctamente y enviada a HeidiSQL.'
+    mensaje_exito = f'Gracias {nombre}. Tu reserva para {personas} personas el dia {fecha_mysql} ha sido confirmada correctamente y enviada a HeidiSQL.'
     return render_template('reserva.html', cliente=nombre, email=email, mensaje=mensaje_exito, negocio_name=BUSINESS_NAME)
 
 
@@ -800,7 +828,8 @@ def mysql_reservas():
             telefono = request.form.get('telefono', '').strip()
             email = request.form.get('email', '').strip().lower()
             personas = int(request.form.get('personas', 1))
-            fecha_reserva = request.form.get('fecha_reserva', '').strip() or None
+            fecha_reserva_raw = request.form.get('fecha_reserva', '').strip()
+            fecha_reserva = normalize_reserva_datetime(fecha_reserva_raw) if fecha_reserva_raw else None
             mysql_manager.insert_reserva(cliente, telefono, email, personas, fecha_reserva)
             flash('Reserva creada en MySQL.', 'success')
         elif accion == 'eliminar':
