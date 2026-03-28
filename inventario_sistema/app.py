@@ -146,12 +146,52 @@ with app.app_context():
     # Mantiene en Render los platos y bebidas base sin borrar productos existentes.
     menu_base = [
         (
+            'Aguado',
+            25,
+            3.50,
+            'Caldos',
+            'Aguado de pollo.',
+            'https://source.unsplash.com/1200x900/?chicken,soup',
+        ),
+        (
+            'Caldo de Pata',
+            20,
+            3.50,
+            'Caldos',
+            'Caldo de pata casero.',
+            'https://source.unsplash.com/1200x900/?beef,soup',
+        ),
+        (
+            'Carne Asada',
+            20,
+            4.00,
+            'Asados',
+            'Carne asada al punto.',
+            'https://source.unsplash.com/1200x900/?grilled,beef',
+        ),
+        (
+            'Chuleta Asada',
+            20,
+            4.00,
+            'Asados',
+            'Chuleta asada a la parrilla.',
+            'https://source.unsplash.com/1200x900/?grilled,pork',
+        ),
+        (
             'Pollo Asado',
             20,
             4.00,
             'Asados',
             'Pollo asado al carbon.',
             'https://img.freepik.com/fotos-premium/pollo-asado-arroz-plato-primer-plano_848191-330.jpg?w=2000',
+        ),
+        (
+            'Pollo al Jugo',
+            20,
+            4.00,
+            'Tradicional',
+            'Pollo al jugo con salsa casera.',
+            'https://source.unsplash.com/1200x900/?chicken,stew',
         ),
         (
             'Caldo de Gallina',
@@ -162,44 +202,36 @@ with app.app_context():
             'https://tse3.mm.bing.net/th/id/OIP.scKWVE-svuaRalRWQE0U_wHaEN?rs=1&pid=ImgDetMain&o=7&rm=3',
         ),
         (
-            'Ceviche de Camaron',
-            20,
-            9.00,
-            'Mariscos',
-            'Ceviche fresco de camaron con limon, tomate y cilantro.',
-            'https://images.unsplash.com/photo-1604909052743-94e838986d24?auto=format&fit=crop&w=1200&q=80',
-        ),
-        (
             'Guatita',
-            15,
-            8.50,
-            'Platos Principales',
-            'Plato tradicional ecuatoriano hecho con tripa, papa y mani.',
+            20,
+            4.00,
+            'Tradicional',
+            'Guatita tradicional.',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Guatita.jpg/640px-Guatita.jpg',
         ),
         (
+            'Lengua Guisada',
+            20,
+            4.00,
+            'Tradicional',
+            'Lengua guisada en salsa.',
+            'https://source.unsplash.com/1200x900/?beef,stew,plate',
+        ),
+        (
             'Seco de Gallina',
-            18,
-            9.75,
-            'Platos Principales',
-            'Gallina cocinada en salsa de cilantro, cerveza y especias.',
+            20,
+            4.00,
+            'Tradicional',
+            'Seco de gallina con arroz.',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Seco_de_pollo.jpg/640px-Seco_de_pollo.jpg',
         ),
         (
             'Seco de Carne',
-            22,
-            10.50,
-            'Platos Principales',
-            'Res en guiso con cilantro, cebolla y especias.',
+            20,
+            4.00,
+            'Tradicional',
+            'Seco de carne con arroz.',
             'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Beef_stew.jpg/640px-Beef_stew.jpg',
-        ),
-        (
-            'Encebollado',
-            25,
-            6.75,
-            'Sopas y Caldos',
-            'Sopa de pescado con yuca, cebolla encurtida y cilantro.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Encebollado.jpg/640px-Encebollado.jpg',
         ),
         (
             'Gaseosa',
@@ -213,7 +245,19 @@ with app.app_context():
 
     existentes = {((p.get('nombre') or '').strip().lower()): p for p in db_conexion.obtener_todos_productos()}
     for nombre, cantidad, precio, categoria, descripcion, imagen in menu_base:
-        if nombre.strip().lower() not in existentes:
+        key = nombre.strip().lower()
+        row = existentes.get(key)
+        if row:
+            db_conexion.actualizar_producto(
+                row.get('id'),
+                nombre=nombre,
+                cantidad=cantidad,
+                precio=precio,
+                categoria=categoria,
+                descripcion=descripcion,
+                imagen=imagen,
+            )
+        else:
             db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion, imagen)
 
     try:
