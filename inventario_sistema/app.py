@@ -4,6 +4,7 @@ from io import BytesIO
 from flask import Flask, flash, redirect, render_template, request, send_file, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from jinja2 import TemplateNotFound
+from dotenv import load_dotenv
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -16,6 +17,8 @@ from inventario.productos import Producto as ProductoORM
 from models.conexion import ConexionSQLite
 from models.user import UsuarioLogin
 from services.producto_service import ProductoService
+
+load_dotenv()
 
 app = Flask(__name__)
 
