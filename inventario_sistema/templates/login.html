@@ -2,12 +2,32 @@
 
 {% block title %}Iniciar Sesion - {{ negocio_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .auth-card {
+        border: 1px solid rgba(201, 162, 39, 0.18);
+        background: linear-gradient(180deg, rgba(245, 241, 232, 0.05), rgba(245, 241, 232, 0.02));
+    }
+    .auth-caption {
+        color: #d8d1c7;
+    }
+    .auth-link {
+        color: #f3d67a;
+        text-decoration: none;
+        font-weight: 700;
+    }
+    .auth-link:hover {
+        color: #fff2bf;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-6 col-lg-5">
-        <div class="card p-4">
+        <div class="card auth-card p-4 p-md-5">
             <h2 class="mb-3" style="color:#C9A227; font-family:'Cormorant Garamond', Georgia, serif;">Iniciar Sesion</h2>
-            <p class="mb-4" style="color:#d8d1c7;">Accede al sistema para gestionar productos, reservas y reportes.</p>
+            <p class="mb-4 auth-caption">Accede al sistema para gestionar productos, reservas, carrito y reportes.</p>
 
             <form method="POST" action="{{ url_for('login') }}">
                 <div class="mb-3">
@@ -22,7 +42,7 @@
             </form>
 
             <hr>
-            <p class="mb-0">No tienes cuenta? <a href="{{ url_for('registro') }}">Registrate aqui</a></p>
+            <p class="mb-0">No tienes cuenta? <a class="auth-link" href="{{ url_for('registro') }}">Registrate aqui</a></p>
         </div>
     </div>
 </div>

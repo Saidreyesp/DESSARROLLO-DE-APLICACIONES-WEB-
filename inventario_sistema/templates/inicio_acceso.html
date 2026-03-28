@@ -2,20 +2,148 @@
 
 {% block title %}Acceso - {{ negocio_name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .access-shell {
+        position: relative;
+        overflow: hidden;
+    }
+    .access-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(circle at top left, rgba(201, 162, 39, 0.18), transparent 32%),
+            radial-gradient(circle at bottom right, rgba(106, 30, 45, 0.26), transparent 36%);
+        pointer-events: none;
+    }
+    .access-grid {
+        position: relative;
+        z-index: 1;
+    }
+    .access-hero {
+        min-height: 100%;
+        border: 1px solid rgba(201, 162, 39, 0.22);
+        background: linear-gradient(180deg, rgba(245, 241, 232, 0.05), rgba(245, 241, 232, 0.02));
+    }
+    .access-badge {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: rgba(201, 162, 39, 0.12);
+        color: #f3d67a;
+        font-size: 0.88rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .access-title {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        color: #f7e7b3;
+        font-size: clamp(2.5rem, 5vw, 4.3rem);
+        line-height: 0.95;
+    }
+    .access-lead {
+        color: #ddd3c4;
+        font-size: 1.05rem;
+        max-width: 34rem;
+    }
+    .access-points {
+        display: grid;
+        gap: 14px;
+        margin-top: 24px;
+    }
+    .access-point {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 14px 16px;
+        border-radius: 14px;
+        background: rgba(245, 241, 232, 0.04);
+        border: 1px solid rgba(245, 241, 232, 0.08);
+    }
+    .access-point strong {
+        color: #f6eddc;
+    }
+    .access-point span {
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #c9a227;
+        color: #1a1a1a;
+        font-weight: 700;
+    }
+    .access-actions {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border: 1px solid rgba(201, 162, 39, 0.18);
+        background: rgba(20, 20, 20, 0.92);
+    }
+    .access-actions .btn {
+        padding-top: 14px;
+        padding-bottom: 14px;
+        font-size: 1rem;
+    }
+    .access-note {
+        color: #bfb3a1;
+        font-size: 0.95rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center mt-4">
-    <div class="col-lg-8">
-        <div class="card p-4 p-md-5 text-center">
-            <h2 class="mb-3" style="color:#C9A227; font-family:'Cormorant Garamond', Georgia, serif; font-size:2.2rem;">Bienvenido a {{ negocio_name }}</h2>
-            <p class="mb-4" style="color:#d8d1c7; font-size:1.05rem;">Para entrar al sistema primero inicia sesion o crea una cuenta nueva.</p>
+<div class="access-shell card p-3 p-md-4 mt-3">
+    <div class="row g-4 access-grid align-items-stretch">
+        <div class="col-lg-7">
+            <div class="card access-hero p-4 p-md-5">
+                <span class="access-badge mb-3">Acceso protegido</span>
+                <h2 class="access-title mb-3">Ingresa al sistema del comedor</h2>
+                <p class="access-lead mb-0">Para ver el menu, comprar, registrar reservas y usar el CRUD de productos, primero debes iniciar sesion o crear tu cuenta.</p>
 
-            <div class="d-grid gap-3 d-md-flex justify-content-md-center">
-                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4">Iniciar Sesion</a>
-                <a href="{{ url_for('registro') }}" class="btn btn-secondary btn-lg px-4">Crear Cuenta</a>
+                <div class="access-points">
+                    <div class="access-point">
+                        <span>1</span>
+                        <div>
+                            <strong>Crea tu cuenta</strong><br>
+                            Usa tu nombre, correo y contrasena para registrarte en el sistema.
+                        </div>
+                    </div>
+                    <div class="access-point">
+                        <span>2</span>
+                        <div>
+                            <strong>Inicia sesion</strong><br>
+                            Accede con tus credenciales para entrar al panel del comedor.
+                        </div>
+                    </div>
+                    <div class="access-point">
+                        <span>3</span>
+                        <div>
+                            <strong>Gestiona y compra</strong><br>
+                            Consulta productos, agrega platos, reserva y administra informacion protegida.
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
 
-            <hr class="my-4">
-            <p class="mb-0" style="color:#bdb4a7;">Si ya tienes usuario, entra con tu correo y contrasena.</p>
+        <div class="col-lg-5">
+            <div class="card access-actions p-4 p-md-5 text-center">
+                <h3 class="mb-2" style="color:#f6eddc; font-family:'Cormorant Garamond', Georgia, serif; font-size:2rem;">Bienvenido</h3>
+                <p class="access-note mb-4">Selecciona una opcion para continuar.</p>
+
+                <div class="d-grid gap-3">
+                    <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg">Iniciar Sesion</a>
+                    <a href="{{ url_for('registro') }}" class="btn btn-secondary btn-lg">Crear Cuenta</a>
+                </div>
+
+                <hr class="my-4">
+                <p class="access-note mb-0">Las rutas de menu, carrito, reservas y CRUD estan protegidas por autenticacion.</p>
+            </div>
         </div>
     </div>
 </div>
