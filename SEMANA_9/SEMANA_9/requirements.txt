@@ -1,5 +1,0 @@
-<<<<<<< HEAD
-Flask==3.0.0
-=======
-Flask==3.0.0
->>>>>>> de0d8b5 (Resueltos los conflictos de fusión)
