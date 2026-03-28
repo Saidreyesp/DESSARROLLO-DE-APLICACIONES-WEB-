@@ -248,6 +248,7 @@ with app.app_context():
         key = nombre.strip().lower()
         row = existentes.get(key)
         if row:
+            imagen_final = (row.get('imagen') or '').strip() or imagen
             db_conexion.actualizar_producto(
                 row.get('id'),
                 nombre=nombre,
@@ -255,7 +256,7 @@ with app.app_context():
                 precio=precio,
                 categoria=categoria,
                 descripcion=descripcion,
-                imagen=imagen,
+                imagen=imagen_final,
             )
         else:
             db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion, imagen)
