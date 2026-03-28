@@ -2,6 +2,7 @@ services:
   - type: web
     name: comedor-alexandra
     runtime: python
+    rootDir: inventario_sistema
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
