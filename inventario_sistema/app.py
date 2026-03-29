@@ -1,15 +1,12 @@
 import os
 from datetime import datetime
 from functools import wraps
-from io import BytesIO
 from pathlib import Path
 
-from flask import Flask, flash, jsonify, redirect, render_template, request, send_file, url_for
+from flask import Flask, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from jinja2 import TemplateNotFound
 from dotenv import load_dotenv
-from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from Conexion.conexion import MySQLManager
@@ -838,43 +835,6 @@ def mysql_producto_eliminar(id_producto):
         return redirect(url_for('mysql_productos_lista'))
 
     return render_template('productos_mysql/eliminar.html', producto=producto, negocio_name=BUSINESS_NAME)
-
-
-@app.route('/mysql/productos-crud/reporte-pdf')
-@login_required
-@owner_required
-def mysql_productos_reporte_pdf():
-    resumen = producto_service.resumen()
-    productos_mysql = resumen['productos']
-    buffer = BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
-
-    y = height - 50
-    pdf.setFont('Helvetica-Bold', 14)
-    pdf.drawString(40, y, 'Reporte de Productos MySQL')
-    y -= 18
-    pdf.setFont('Helvetica', 10)
-    pdf.drawString(40, y, f'Fecha de emision: {datetime.now().strftime("%Y-%m-%d %H:%M")}')
-    y -= 16
-    pdf.drawString(40, y, f'Total items: {resumen["total_items"]} | Stock total: {resumen["total_stock"]} | Valor total: ${float(resumen["total_valor"]):.2f}')
-    y -= 24
-
-    pdf.setFont('Helvetica', 9)
-    for producto in productos_mysql:
-        if y < 60:
-            pdf.showPage()
-            y = height - 50
-        pdf.drawString(40, y, str(producto.id_producto))
-        pdf.drawString(80, y, producto.nombre[:30])
-        pdf.drawString(260, y, producto.categoria[:15] if producto.categoria else '-')
-        pdf.drawRightString(400, y, str(producto.cantidad))
-        pdf.drawRightString(500, y, f'${float(producto.precio):.2f}')
-        y -= 14
-
-    pdf.save()
-    buffer.seek(0)
-    return send_file(buffer, mimetype='application/pdf', as_attachment=True, download_name='reporte_productos_mysql.pdf')
 
 
 @app.route('/datos')
