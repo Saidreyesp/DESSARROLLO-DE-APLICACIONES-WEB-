@@ -126,6 +126,8 @@ class MySQLManager:
             CREATE TABLE IF NOT EXISTS facturas (
                 id_factura INT AUTO_INCREMENT PRIMARY KEY,
                 id_cliente INT NOT NULL,
+                nombre_cliente VARCHAR(120) NULL,
+                email_cliente VARCHAR(150) NULL,
                 fecha DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 subtotal DECIMAL(10,2) NOT NULL DEFAULT 0.00,
                 iva DECIMAL(10,2) NOT NULL DEFAULT 0.00,
@@ -149,6 +151,35 @@ class MySQLManager:
                     ON DELETE CASCADE ON UPDATE CASCADE,
                 CONSTRAINT fk_detalle_producto
                     FOREIGN KEY (id_producto) REFERENCES productos_mysql(id_producto)
+                    ON UPDATE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS inicios_sesion_mysql (
+                id_inicio INT AUTO_INCREMENT PRIMARY KEY,
+                id_usuario INT NULL,
+                nombre VARCHAR(120) NOT NULL,
+                email VARCHAR(150) NOT NULL,
+                ip_cliente VARCHAR(60),
+                creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS pagos_mysql (
+                id_pago INT AUTO_INCREMENT PRIMARY KEY,
+                id_factura INT NOT NULL,
+                id_cliente INT NOT NULL,
+                nombre_cliente VARCHAR(120) NOT NULL,
+                email_cliente VARCHAR(150),
+                metodo_pago VARCHAR(40) NOT NULL,
+                detalle_pago TEXT NULL,
+                total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_pago_factura
+                    FOREIGN KEY (id_factura) REFERENCES facturas(id_factura)
+                    ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT fk_pago_cliente
+                    FOREIGN KEY (id_cliente) REFERENCES clientes(id_cliente)
                     ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
             """,
@@ -178,6 +209,26 @@ class MySQLManager:
             col_detalle_pago = cur.fetchone()
             if not col_detalle_pago:
                 cur.execute("ALTER TABLE facturas ADD COLUMN detalle_pago TEXT NULL")
+
+            cur.execute("SHOW COLUMNS FROM facturas LIKE 'nombre_cliente'")
+            col_nombre_cliente = cur.fetchone()
+            if not col_nombre_cliente:
+                cur.execute("ALTER TABLE facturas ADD COLUMN nombre_cliente VARCHAR(120) NULL AFTER id_cliente")
+
+            cur.execute("SHOW COLUMNS FROM facturas LIKE 'email_cliente'")
+            col_email_cliente = cur.fetchone()
+            if not col_email_cliente:
+                cur.execute("ALTER TABLE facturas ADD COLUMN email_cliente VARCHAR(150) NULL AFTER nombre_cliente")
+
+            cur.execute(
+                """
+                UPDATE facturas f
+                JOIN clientes c ON c.id_cliente = f.id_cliente
+                SET f.nombre_cliente = c.nombres,
+                    f.email_cliente = COALESCE(c.email, f.email_cliente)
+                WHERE f.nombre_cliente IS NULL OR f.nombre_cliente = ''
+                """
+            )
 
             cur.execute("SHOW COLUMNS FROM reservas_mysql LIKE 'email'")
             col_reserva_email = cur.fetchone()
@@ -334,8 +385,8 @@ class MySQLManager:
         with self.connection() as conn:
             cur = conn.cursor()
             cur.execute(
-                "INSERT INTO facturas (id_cliente, subtotal, iva, total, metodo_pago, detalle_pago) VALUES (%s, %s, %s, %s, %s, %s)",
-                (id_cliente, subtotal, iva, total, metodo_pago, detalle_pago_json),
+                "INSERT INTO facturas (id_cliente, nombre_cliente, email_cliente, subtotal, iva, total, metodo_pago, detalle_pago) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+                (id_cliente, usuario.nombre, usuario.email, subtotal, iva, total, metodo_pago, detalle_pago_json),
             )
             id_factura = cur.lastrowid
 
@@ -344,6 +395,11 @@ class MySQLManager:
                     "INSERT INTO detalle_factura (id_factura, id_producto, cantidad, precio_unitario) VALUES (%s, %s, %s, %s)",
                     (id_factura, item['id_producto'], int(item['cantidad']), float(item['precio'])),
                 )
+
+            cur.execute(
+                "INSERT INTO pagos_mysql (id_factura, id_cliente, nombre_cliente, email_cliente, metodo_pago, detalle_pago, total) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (id_factura, id_cliente, usuario.nombre, usuario.email, metodo_pago, detalle_pago_json, total),
+            )
 
             conn.commit()
 
@@ -418,6 +474,15 @@ class MySQLManager:
                    (nombre_completo, nombre_usuario, correo, telefono, password, cargo_interes)
                    VALUES (%s, %s, %s, %s, %s, %s)""",
                 (nombre_completo, nombre_usuario, correo, telefono, password, cargo_interes),
+            )
+            conn.commit()
+
+    def insert_inicio_sesion(self, id_usuario, nombre, email, ip_cliente=None):
+        with self.connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                "INSERT INTO inicios_sesion_mysql (id_usuario, nombre, email, ip_cliente) VALUES (%s, %s, %s, %s)",
+                (id_usuario, nombre, email, ip_cliente),
             )
             conn.commit()
 

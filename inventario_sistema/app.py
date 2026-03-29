@@ -389,7 +389,17 @@ def login():
             flash('Credenciales invalidas.', 'error')
             return redirect(url_for('login'))
 
-        login_user(UsuarioLogin.from_mysql_row(usuario_db))
+        usuario_login = UsuarioLogin.from_mysql_row(usuario_db)
+        login_user(usuario_login)
+        try:
+            mysql_manager.insert_inicio_sesion(
+                usuario_login.id_usuario,
+                usuario_login.nombre,
+                usuario_login.email,
+                request.headers.get('X-Forwarded-For', request.remote_addr),
+            )
+        except Exception:
+            pass
         flash('Sesion iniciada correctamente.', 'success')
         return redirect(request.args.get('next') or url_for('index'))
 
