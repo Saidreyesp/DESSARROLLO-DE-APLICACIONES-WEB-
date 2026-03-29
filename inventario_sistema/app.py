@@ -284,6 +284,26 @@ with app.app_context():
         else:
             db_conexion.añadir_producto(nombre, cantidad, precio, categoria, descripcion, imagen)
 
+    # Limpieza solicitada: quitar Encebollado y bebidas repetidas.
+    productos_actuales = db_conexion.obtener_todos_productos()
+    for producto in productos_actuales:
+        nombre_producto = (producto.get('nombre') or '').strip().lower()
+        if nombre_producto == 'encebollado':
+            db_conexion.eliminar_producto(producto.get('id'))
+
+    bebidas = [
+        p for p in db_conexion.obtener_todos_productos()
+        if (p.get('categoria') or '').strip().lower() == 'bebidas'
+    ]
+    bebidas = sorted(bebidas, key=lambda p: int(p.get('id') or 0))
+    vistas = set()
+    for bebida in bebidas:
+        clave = (bebida.get('nombre') or '').strip().lower()
+        if clave in vistas:
+            db_conexion.eliminar_producto(bebida.get('id'))
+            continue
+        vistas.add(clave)
+
     try:
         mysql_manager.crear_tablas()
         mysql_manager.sync_menu_productos(db_conexion.obtener_todos_productos())
