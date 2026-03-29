@@ -151,7 +151,7 @@ with app.app_context():
             3.50,
             'Caldos',
             'Aguado de pollo.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Chicken_soup.jpg/640px-Chicken_soup.jpg',
+            'https://i.pinimg.com/originals/4b/f8/da/4bf8da4412ee7072dd2e827e3aeb13b7.jpg',
         ),
         (
             'Caldo de Pata',
@@ -159,7 +159,7 @@ with app.app_context():
             3.50,
             'Caldos',
             'Caldo de pata casero.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Beef_bone_broth.jpg/640px-Beef_bone_broth.jpg',
+            'https://tse4.mm.bing.net/th/id/OIP.DIqAyCEtXgKepTNeV5wVuwHaE7?rs=1&pid=ImgDetMain&o=7&rm=3',
         ),
         (
             'Carne Asada',
@@ -167,7 +167,7 @@ with app.app_context():
             4.00,
             'Asados',
             'Carne asada al punto.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Carne_asada.jpg/640px-Carne_asada.jpg',
+            'https://tse2.mm.bing.net/th/id/OIP.CoVmf_F0vfHfFlOgb6IpAgAAAA?rs=1&pid=ImgDetMain&o=7&rm=3',
         ),
         (
             'Chuleta Asada',
@@ -175,7 +175,7 @@ with app.app_context():
             4.00,
             'Asados',
             'Chuleta asada a la parrilla.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Grilled_pork_chop.jpg/640px-Grilled_pork_chop.jpg',
+            'https://queapetito.com/wp-content/uploads/2019/07/chuletas-de-cerdo-asadas-1200-amp.jpg',
         ),
         (
             'Pollo Asado',
@@ -191,7 +191,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Pollo al jugo con salsa casera.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Cooked_chicken.jpg/640px-Cooked_chicken.jpg',
+            'https://cdn.kiwilimon.com/recetaimagen/31117/35674.jpg',
         ),
         (
             'Caldo de Gallina',
@@ -207,7 +207,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Guatita tradicional.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/Guatita.jpg/640px-Guatita.jpg',
+            'https://tse2.mm.bing.net/th/id/OIP.g6E5nH8vQe2orPrE4eOJegHaE6?rs=1&pid=ImgDetMain&o=7&rm=3',
         ),
         (
             'Lengua Guisada',
@@ -215,7 +215,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Lengua guisada en salsa.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/1/18/Beef_tongue_stew.jpg/640px-Beef_tongue_stew.jpg',
+            'https://tse3.mm.bing.net/th/id/OIP.VdcRChjmYLXyeOAkywrevgHaEK?rs=1&pid=ImgDetMain&o=7&rm=3',
         ),
         (
             'Seco de Gallina',
@@ -223,7 +223,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Seco de gallina con arroz.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Seco_de_pollo.jpg/640px-Seco_de_pollo.jpg',
+            'https://th.bing.com/th/id/R.36b296daf5c40905869c39e1a65cd276?rik=TXTmSc3JJh11WQ&pid=ImgRaw&r=0',
         ),
         (
             'Seco de Carne',
@@ -231,7 +231,7 @@ with app.app_context():
             4.00,
             'Tradicional',
             'Seco de carne con arroz.',
-            'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Beef_stew.jpg/640px-Beef_stew.jpg',
+            'https://tse3.mm.bing.net/th/id/OIP.jEZcK9GxpoDWTpldU8EVeAHaFb?rs=1&pid=ImgDetMain&o=7&rm=3',
         ),
         (
             'Gaseosa',
@@ -240,6 +240,30 @@ with app.app_context():
             'Bebidas',
             'Gaseosa personal fria.',
             'https://source.unsplash.com/1200x900/?cola,soft-drink',
+        ),
+        (
+            'Cola de 1 litro',
+            20,
+            1.50,
+            'Bebidas',
+            'Cola de 1 litro bien fria.',
+            'https://source.unsplash.com/1200x900/?cola,bottle',
+        ),
+        (
+            'Jugo de Tamarindo',
+            20,
+            1.00,
+            'Bebidas',
+            'Jugo natural de tamarindo.',
+            'https://source.unsplash.com/1200x900/?tamarind,juice',
+        ),
+        (
+            'Jugo de Quaker',
+            20,
+            1.00,
+            'Bebidas',
+            'Jugo de quaker tradicional.',
+            'https://source.unsplash.com/1200x900/?oat,drink',
         ),
     ]
 
