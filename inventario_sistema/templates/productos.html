@@ -137,7 +137,7 @@
                     {% if p.cantidad > 0 %}
                     <button type="button" class="btn btn-sm fw-bold w-100"
                         style="background:#C9A227;border-color:#C9A227;color:#121212;"
-                        onclick="quickAdd(this, {{ p.id | tojson }}, {{ p.nombre | tojson }}, {{ p.precio | float }})"
+                        onclick="quickAdd(this, {{ p.id | tojson }}, {{ p.nombre | tojson }}, {{ p.precio | float }}, true)"
                     >🛒 Añadir</button>
                     {% else %}
                     <button class="btn btn-sm btn-secondary w-100" disabled>Agotado</button>
@@ -184,7 +184,7 @@
                             <div class="bebida-precio">${{ "%.2f"|format(b.precio) }}</div>
                             {% if b.cantidad > 0 %}
                             <button type="button" class="btn btn-sm mt-1" style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:0.75rem;padding:2px 8px;"
-                                onclick="quickAdd(this, {{ b.id | tojson }}, {{ b.nombre | tojson }}, {{ b.precio | float }})">+ Añadir</button>
+                                onclick="quickAdd(this, {{ b.id | tojson }}, {{ b.nombre | tojson }}, {{ b.precio | float }}, true)">+ Añadir</button>
                             {% endif %}
                         </div>
                     </div>
@@ -218,7 +218,7 @@ var KEY = 'carrito_alexandra';
 function getCarrito(){ var r=localStorage.getItem(KEY); return r?JSON.parse(r):[]; }
 function saveCarrito(c){ localStorage.setItem(KEY,JSON.stringify(c)); if(window.actualizarCartBadge) window.actualizarCartBadge(); }
 
-function quickAdd(button, id, nombre, precio){
+function quickAdd(button, id, nombre, precio, irAPedidos){
     var c = getCarrito();
     var ex = c.find(function(x){ return x.id===id; });
     if(ex){ ex.cantidad += 1; } else { c.push({id:id, nombre:nombre, precio:precio, cantidad:1}); }
@@ -234,6 +234,10 @@ function quickAdd(button, id, nombre, precio){
             button.textContent = original;
             button.disabled = false;
         }, 900);
+    }
+
+    if(irAPedidos){
+        setTimeout(function(){ window.location.href = '/carrito'; }, 250);
     }
 }
 
