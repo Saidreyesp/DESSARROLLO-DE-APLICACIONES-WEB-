@@ -136,8 +136,11 @@
                     <a href="/plato/{{ p.nombre }}" class="btn btn-outline-secondary btn-sm">👁️ Ver</a>
                     {% if p.cantidad > 0 %}
                     <button type="button" class="btn btn-sm fw-bold w-100"
-                        style="background:#C9A227;border-color:#C9A227;color:#121212;"
-                        onclick="quickAdd(this, {{ p.id | tojson }}, {{ p.nombre | tojson }}, {{ p.precio | float }}, true)"
+                        style="background:#C9A227;border-color:#C9A227;color:#121212;cursor:pointer;"
+                        data-id="{{ p.id }}"
+                        data-nombre="{{ p.nombre|e }}"
+                        data-precio="{{ p.precio }}"
+                        onclick="addAndGoFromDataset(this)"
                     >🛒 Añadir</button>
                     {% else %}
                     <button class="btn btn-sm btn-secondary w-100" disabled>Agotado</button>
@@ -183,8 +186,11 @@
                         <div class="text-end">
                             <div class="bebida-precio">${{ "%.2f"|format(b.precio) }}</div>
                             {% if b.cantidad > 0 %}
-                            <button type="button" class="btn btn-sm mt-1" style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:0.75rem;padding:2px 8px;"
-                                onclick="quickAdd(this, {{ b.id | tojson }}, {{ b.nombre | tojson }}, {{ b.precio | float }}, true)">+ Añadir</button>
+                            <button type="button" class="btn btn-sm mt-1" style="background:#C9A227;border-color:#C9A227;color:#121212;font-size:0.75rem;padding:2px 8px;cursor:pointer;"
+                                data-id="{{ b.id }}"
+                                data-nombre="{{ b.nombre|e }}"
+                                data-precio="{{ b.precio }}"
+                                onclick="addAndGoFromDataset(this)">+ Añadir</button>
                             {% endif %}
                         </div>
                     </div>
@@ -236,9 +242,20 @@ function quickAdd(button, id, nombre, precio, irAPedidos){
         }, 900);
     }
 
-    if(irAPedidos){
-        setTimeout(function(){ window.location.href = '/carrito'; }, 250);
-    }
+    if(irAPedidos){ window.location.href = '/carrito'; }
+}
+
+function addAndGo(button, id, nombre, precio){
+    quickAdd(button, id, nombre, precio, false);
+    window.location.href = '/carrito';
+}
+
+function addAndGoFromDataset(button){
+    if(!button) return;
+    var id = button.dataset.id;
+    var nombre = button.dataset.nombre || '';
+    var precio = parseFloat(button.dataset.precio || '0');
+    addAndGo(button, id, nombre, precio);
 }
 
 function quitarItem(id){
