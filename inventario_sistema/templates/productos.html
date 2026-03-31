@@ -80,6 +80,27 @@
         top: 16px;
     }
     .carrito-panel h3 { color: #C9A227; font-family: 'Playfair Display', serif; }
+    .form-panel {
+        background: #1E1E1E;
+        border: 1px solid #C9A227;
+        border-radius: 15px;
+        padding: 1rem;
+    }
+    .form-panel h3 {
+        color: #C9A227;
+        font-family: 'Playfair Display', serif;
+        margin-bottom: 0.8rem;
+    }
+    .form-panel .form-label {
+        color: #d8d1c7;
+        font-size: 0.84rem;
+        margin-bottom: 0.2rem;
+    }
+    .form-panel .form-control {
+        background: #151515;
+        border: 1px solid #333;
+        color: #F5F1E8;
+    }
     .carrito-item-row {
         display: flex; justify-content: space-between; align-items: center;
         padding: 6px 0; border-bottom: 1px solid #2f2f2f; font-size: 0.88rem;
@@ -154,6 +175,41 @@
     </div>
 
     <div class="col-lg-4">
+        <div class="form-panel mb-4">
+            <h3>➕ Agregar Producto</h3>
+            <form method="POST" action="{{ url_for('nuevo_producto') }}" class="row g-2">
+                <div class="col-12">
+                    <label class="form-label" for="nombreNuevo">Nombre</label>
+                    <input id="nombreNuevo" name="nombre" class="form-control form-control-sm" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label" for="cantidadNueva">Cantidad</label>
+                    <input id="cantidadNueva" name="cantidad" type="number" min="0" class="form-control form-control-sm" value="0" required>
+                </div>
+                <div class="col-6">
+                    <label class="form-label" for="precioNuevo">Precio</label>
+                    <input id="precioNuevo" name="precio" type="number" step="0.01" min="0" class="form-control form-control-sm" value="0" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="categoriaNueva">Categoria</label>
+                    <input id="categoriaNueva" name="categoria" class="form-control form-control-sm" placeholder="Ej. Tradicional" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="descripcionNueva">Descripcion</label>
+                    <input id="descripcionNueva" name="descripcion" class="form-control form-control-sm" placeholder="Descripcion corta">
+                </div>
+                <div class="col-12">
+                    <label class="form-label" for="imagenNueva">URL Imagen (opcional)</label>
+                    <input id="imagenNueva" name="imagen" class="form-control form-control-sm" placeholder="https://...">
+                </div>
+                <div class="col-12 mt-2">
+                    <button type="submit" class="btn w-100 fw-bold" style="background:#C9A227;border-color:#C9A227;color:#121212;">
+                        Guardar producto
+                    </button>
+                </div>
+            </form>
+        </div>
+
         <div class="carrito-panel mb-4">
             <h3 class="mb-3">🛒 Mi Pedido</h3>
             <div id="miniCarritoItems">

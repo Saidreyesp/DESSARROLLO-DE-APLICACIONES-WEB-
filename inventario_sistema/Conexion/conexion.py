@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 from contextlib import contextmanager
 from urllib.parse import unquote, urlparse
 
@@ -174,6 +175,8 @@ class MySQLManager:
                 metodo_pago VARCHAR(40) NOT NULL,
                 detalle_pago TEXT NULL,
                 total DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+                estado_pago VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE',
+                pagado_en DATETIME NULL,
                 creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 CONSTRAINT fk_pago_factura
                     FOREIGN KEY (id_factura) REFERENCES facturas(id_factura)
@@ -234,6 +237,26 @@ class MySQLManager:
             col_reserva_email = cur.fetchone()
             if not col_reserva_email:
                 cur.execute("ALTER TABLE reservas_mysql ADD COLUMN email VARCHAR(150) NULL AFTER telefono")
+
+            cur.execute("SHOW COLUMNS FROM pagos_mysql LIKE 'estado_pago'")
+            col_estado_pago = cur.fetchone()
+            if not col_estado_pago:
+                cur.execute("ALTER TABLE pagos_mysql ADD COLUMN estado_pago VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE' AFTER total")
+
+            cur.execute("SHOW COLUMNS FROM pagos_mysql LIKE 'pagado_en'")
+            col_pagado_en = cur.fetchone()
+            if not col_pagado_en:
+                cur.execute("ALTER TABLE pagos_mysql ADD COLUMN pagado_en DATETIME NULL AFTER estado_pago")
+
+            # En este flujo todos los pagos se gestionan como pagados.
+            cur.execute(
+                """
+                UPDATE pagos_mysql
+                SET estado_pago = 'PAGADO',
+                    pagado_en = IFNULL(pagado_en, creado_en)
+                WHERE estado_pago IS NULL OR TRIM(estado_pago) = '' OR UPPER(estado_pago) <> 'PAGADO'
+                """
+            )
 
             conn.commit()
 
@@ -377,8 +400,8 @@ class MySQLManager:
         id_cliente = self.ensure_cliente(cedula, usuario.nombre, email=usuario.email)
 
         subtotal = round(sum(float(item['precio']) * int(item['cantidad']) for item in items), 2)
-        iva = round(subtotal * 0.15, 2)
-        total = round(subtotal + iva, 2)
+        iva = 0.00
+        total = subtotal
 
         detalle_pago_json = json.dumps(detalle_pago or {}, ensure_ascii=True)
 
@@ -397,8 +420,8 @@ class MySQLManager:
                 )
 
             cur.execute(
-                "INSERT INTO pagos_mysql (id_factura, id_cliente, nombre_cliente, email_cliente, metodo_pago, detalle_pago, total) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (id_factura, id_cliente, usuario.nombre, usuario.email, metodo_pago, detalle_pago_json, total),
+                "INSERT INTO pagos_mysql (id_factura, id_cliente, nombre_cliente, email_cliente, metodo_pago, detalle_pago, total, estado_pago, pagado_en) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (id_factura, id_cliente, usuario.nombre, usuario.email, metodo_pago, detalle_pago_json, total, 'PAGADO', datetime.now()),
             )
 
             conn.commit()
@@ -410,7 +433,66 @@ class MySQLManager:
             'total': total,
             'metodo_pago': metodo_pago,
             'detalle_pago': detalle_pago or {},
+            'estado_pago': 'PAGADO',
         }
+
+    def listar_pedidos_facturas(self, limit=200):
+        with self.connection() as conn:
+            cur = conn.cursor(dictionary=True)
+            cur.execute(
+                """
+                SELECT
+                    f.id_factura,
+                    f.fecha,
+                    f.nombre_cliente,
+                    f.email_cliente,
+                    f.subtotal,
+                    COALESCE(p.total, f.total) AS total_pago,
+                    f.total,
+                    f.metodo_pago,
+                    p.estado_pago,
+                    p.pagado_en,
+                    GROUP_CONCAT(
+                        CONCAT(pr.nombre, ' x', d.cantidad)
+                        ORDER BY d.id_detalle
+                        SEPARATOR ', '
+                    ) AS detalle_items
+                FROM facturas f
+                LEFT JOIN pagos_mysql p ON p.id_factura = f.id_factura
+                LEFT JOIN detalle_factura d ON d.id_factura = f.id_factura
+                LEFT JOIN productos_mysql pr ON pr.id_producto = d.id_producto
+                GROUP BY
+                    f.id_factura,
+                    f.fecha,
+                    f.nombre_cliente,
+                    f.email_cliente,
+                    f.subtotal,
+                    p.total,
+                    f.total,
+                    f.metodo_pago,
+                    p.estado_pago,
+                    p.pagado_en
+                ORDER BY f.id_factura DESC
+                LIMIT %s
+                """,
+                (int(limit),),
+            )
+            return cur.fetchall()
+
+    def marcar_factura_pagada(self, id_factura):
+        with self.connection() as conn:
+            cur = conn.cursor()
+            cur.execute(
+                """
+                UPDATE pagos_mysql
+                SET estado_pago = 'PAGADO',
+                    pagado_en = NOW()
+                WHERE id_factura = %s
+                """,
+                (id_factura,),
+            )
+            conn.commit()
+            return cur.rowcount > 0
 
     def delete_usuario(self, id_usuario):
         with self.connection() as conn:

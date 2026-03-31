@@ -35,9 +35,9 @@ BUSINESS_RECEIPT_PHONE = '0992884043'
 BUSINESS_HR_EMAIL = 'saidreyes567@gmail.com'
 OWNER_EMAIL = os.getenv('OWNER_EMAIL', BUSINESS_HR_EMAIL).strip().lower()
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///inventario.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///inventario.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.secret_key = 'clave_inventario_2026'
+app.secret_key = os.getenv('SECRET_KEY', 'clave_inventario_2026')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -472,7 +472,9 @@ def productos():
 @app.route('/carrito')
 @login_required
 def carrito():
-    return render_template('carrito.html', negocio_name=BUSINESS_NAME)
+    productos_lista = db_conexion.obtener_todos_productos()
+    bebidas = [p for p in productos_lista if (p.get('categoria') or '').strip().lower() == 'bebidas']
+    return render_template('carrito.html', bebidas=bebidas, negocio_name=BUSINESS_NAME)
 
 
 @app.route('/pedido/enviar', methods=['POST'])
@@ -746,6 +748,34 @@ def reportes():
         productos=productos_lista,
         negocio_name=BUSINESS_NAME,
     )
+
+
+@app.route('/facturas')
+@login_required
+def facturas():
+    try:
+        mysql_manager.crear_tablas()
+        pedidos = mysql_manager.listar_pedidos_facturas()
+    except Exception as exc:
+        flash(f'No se pudieron cargar los pedidos: {exc}', 'error')
+        pedidos = []
+
+    return render_template('facturas.html', pedidos=pedidos, negocio_name=BUSINESS_NAME)
+
+
+@app.route('/facturas/<int:id_factura>/pagado', methods=['POST'])
+@login_required
+def marcar_factura_pagada(id_factura):
+    try:
+        mysql_manager.crear_tablas()
+        actualizado = mysql_manager.marcar_factura_pagada(id_factura)
+        if actualizado:
+            flash(f'Factura #{id_factura} marcada como pagada.', 'success')
+        else:
+            flash(f'No se encontro pago para la factura #{id_factura}.', 'error')
+    except Exception as exc:
+        flash(f'No se pudo actualizar el estado de pago: {exc}', 'error')
+    return redirect(url_for('facturas'))
 
 
 @app.route('/mysql/productos-crud')

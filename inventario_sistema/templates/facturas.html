@@ -1,0 +1,301 @@
+{% extends "base.html" %}
+
+{% block title %}Facturas y Pedidos - {{ negocio_name }}{% endblock %}
+
+{% block content %}
+<style>
+    .facturas-page {
+        color: #121212;
+    }
+    .facturas-card {
+        background: #1E1E1E;
+        border: 1px solid #2f2f2f;
+        border-radius: 14px;
+        padding: 1rem;
+    }
+    .facturas-title {
+        color: #C9A227;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 2rem;
+        margin-bottom: 0.4rem;
+    }
+    .table-wrap {
+        max-height: 72vh;
+        overflow: auto;
+        border: 1px solid #2f2f2f;
+        border-radius: 10px;
+        background: #1E1E1E;
+    }
+    .table {
+        margin-bottom: 0;
+        background: #1E1E1E;
+    }
+    .table thead th {
+        position: sticky;
+        top: 0;
+        background: #6A1E2D;
+        color: #F5F1E8;
+        border-color: #2f2f2f;
+        z-index: 1;
+    }
+    .table td, .table th {
+        color: #F5F1E8;
+        border-color: #2f2f2f;
+        vertical-align: middle;
+        font-size: 0.92rem;
+    }
+    .table tbody tr,
+    .table tbody td {
+        background: #1E1E1E;
+    }
+    .table-hover > tbody > tr:hover > * {
+        color: #F5F1E8;
+        background: #262626;
+    }
+    .estado-badge {
+        border-radius: 999px;
+        padding: 0.28rem 0.62rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        display: inline-block;
+    }
+    .estado-pagado {
+        background: rgba(34, 197, 94, 0.18);
+        color: #86efac;
+        border: 1px solid rgba(34, 197, 94, 0.35);
+    }
+    .estado-pendiente {
+        background: rgba(251, 191, 36, 0.18);
+        color: #fcd34d;
+        border: 1px solid rgba(251, 191, 36, 0.35);
+    }
+    .detalle-cell {
+        min-width: 240px;
+        color: #d8d1c7;
+    }
+    .facturas-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 0.9rem;
+    }
+</style>
+
+<div id="facturasRoot" class="facturas-page" data-negocio="{{ negocio_name }}">
+<div class="facturas-card">
+    <h2 class="facturas-title">Pedidos y Facturas</h2>
+    <p style="color:#d8d1c7; margin-bottom:1rem;">Aqui puedes revisar todos los pedidos y marcar cuando ya fueron pagados.</p>
+
+    {% if pedidos %}
+    <div class="facturas-actions">
+        <button type="button" class="btn btn-warning fw-bold" onclick="generarTodosPedidosPDF()">
+            Generar PDF de todos los pedidos
+        </button>
+    </div>
+    <div class="table-wrap">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Factura</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Detalle</th>
+                    <th>Metodo</th>
+                    <th>Total</th>
+                    <th>Estado</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in pedidos %}
+                <tr>
+                    <td>#{{ p.id_factura }}</td>
+                    <td>{{ p.fecha or '-' }}</td>
+                    <td>
+                        <div>{{ p.nombre_cliente or 'Sin nombre' }}</div>
+                        <small style="color:#aaa;">{{ p.email_cliente or '-' }}</small>
+                    </td>
+                    <td class="detalle-cell">{{ p.detalle_items or 'Sin detalle' }}</td>
+                    <td>{{ p.metodo_pago or '-' }}</td>
+                    <td>
+                        <strong style="color:#C9A227;">${{ '%.2f'|format((p.total_pago or p.total or 0)|float) }}</strong>
+                    </td>
+                    <td>
+                        <span class="estado-badge estado-pagado">PAGADO</span>
+                        {% if p.pagado_en %}
+                        <div><small style="color:#86efac;">{{ p.pagado_en }}</small></div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex flex-column gap-2">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-primary"
+                                data-id-factura="{{ p.id_factura }}"
+                                data-fecha="{{ p.fecha or '-' }}"
+                                data-cliente="{{ p.nombre_cliente or 'Sin nombre' }}"
+                                data-email="{{ p.email_cliente or '-' }}"
+                                data-detalle="{{ p.detalle_items or 'Sin detalle' }}"
+                                data-metodo-pago="{{ p.metodo_pago or '-' }}"
+                                data-total="{{ '%.2f'|format((p.total_pago or p.total or 0)|float) }}"
+                                data-estado-pago="PAGADO"
+                                onclick="generarFacturaPDF(this)"
+                            >Generar PDF</button>
+                            <span style="color:#86efac; font-weight:700;">Listo</span>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info mb-0">No hay pedidos registrados en MySQL todavia.</div>
+    {% endif %}
+</div>
+</div>
+
+<script>
+function generarFacturaPDF(button) {
+    if (!button) return;
+
+    var data = button.dataset || {};
+    var negocioNombre = 'Comedor';
+    var root = document.getElementById('facturasRoot');
+    if (root && root.dataset && root.dataset.negocio) {
+        negocioNombre = root.dataset.negocio;
+    }
+
+    var factura = {
+        id_factura: data.idFactura || '-',
+        fecha: data.fecha || '-',
+        cliente: data.cliente || 'Sin nombre',
+        email: data.email || '-',
+        detalle: data.detalle || 'Sin detalle',
+        metodo_pago: data.metodoPago || '-',
+        total: data.total || '0.00',
+        estado_pago: data.estadoPago || 'PENDIENTE'
+    };
+
+    var contenido =
+        '<!DOCTYPE html>' +
+        '<html><head><meta charset="UTF-8"><title>Factura #' + factura.id_factura + '</title>' +
+        '<style>' +
+        'body{font-family:Arial,sans-serif;padding:28px;color:#111;}' +
+        '.head{border-bottom:2px solid #111;padding-bottom:12px;margin-bottom:18px;}' +
+        '.titulo{font-size:24px;font-weight:700;margin:0;}' +
+        '.sub{color:#444;margin-top:4px;}' +
+        '.box{border:1px solid #ccc;border-radius:8px;padding:12px;margin-top:10px;}' +
+        '.row{display:flex;justify-content:space-between;gap:12px;}' +
+        '.tot{margin-top:16px;border-top:1px solid #ccc;padding-top:10px;}' +
+        '.tot p{margin:6px 0;font-size:15px;}' +
+        '.total{font-weight:800;font-size:18px;}' +
+        '</style></head><body>' +
+        '<div class="head">' +
+            '<h1 class="titulo">' + negocioNombre + '</h1>' +
+            '<div class="sub">Factura #' + factura.id_factura + ' | Fecha: ' + factura.fecha + '</div>' +
+        '</div>' +
+        '<div class="box">' +
+            '<div><strong>Cliente:</strong> ' + factura.cliente + '</div>' +
+            '<div><strong>Email:</strong> ' + factura.email + '</div>' +
+            '<div><strong>Metodo de pago:</strong> ' + factura.metodo_pago + '</div>' +
+            '<div><strong>Estado:</strong> ' + factura.estado_pago + '</div>' +
+        '</div>' +
+        '<div class="box">' +
+            '<strong>Detalle del pedido</strong>' +
+            '<p style="margin-top:8px;line-height:1.45;">' + factura.detalle + '</p>' +
+            '<div class="tot">' +
+                '<p class="total"><span>Total:</span> $' + factura.total + '</p>' +
+            '</div>' +
+        '</div>' +
+        '</body></html>';
+
+    var ventana = window.open('', '_blank', 'width=900,height=700');
+    if (!ventana) {
+        alert('No se pudo abrir la ventana para generar el PDF.');
+        return;
+    }
+
+    ventana.document.open();
+    ventana.document.write(contenido);
+    ventana.document.close();
+
+    ventana.onload = function () {
+        ventana.focus();
+        ventana.print();
+    };
+}
+
+function generarTodosPedidosPDF() {
+    var root = document.getElementById('facturasRoot');
+    var negocioNombre = root && root.dataset ? (root.dataset.negocio || 'Comedor') : 'Comedor';
+    var botones = document.querySelectorAll('button[data-id-factura]');
+
+    if (!botones.length) {
+        alert('No hay pedidos para generar el PDF.');
+        return;
+    }
+
+    var filasHtml = '';
+    var totalGeneral = 0;
+
+    botones.forEach(function(btn) {
+        var d = btn.dataset || {};
+        var total = Number(d.total || 0);
+        totalGeneral += total;
+
+        filasHtml +=
+            '<tr>' +
+                '<td>#' + (d.idFactura || '-') + '</td>' +
+                '<td>' + (d.fecha || '-') + '</td>' +
+                '<td>' + (d.cliente || 'Sin nombre') + '</td>' +
+                '<td>' + (d.email || '-') + '</td>' +
+                '<td>' + (d.metodoPago || '-') + '</td>' +
+                '<td>' + (d.detalle || 'Sin detalle') + '</td>' +
+                '<td style="text-align:right;">$' + total.toFixed(2) + '</td>' +
+                '<td>PAGADO</td>' +
+            '</tr>';
+    });
+
+    var fechaReporte = new Date().toLocaleString();
+
+    var contenido =
+        '<!DOCTYPE html>' +
+        '<html><head><meta charset="UTF-8"><title>Pedidos de todos los clientes</title>' +
+        '<style>' +
+        'body{font-family:Arial,sans-serif;padding:22px;color:#111;}' +
+        'h1{margin:0 0 6px 0;font-size:24px;}' +
+        '.sub{margin-bottom:14px;color:#444;}' +
+        'table{width:100%;border-collapse:collapse;font-size:12px;}' +
+        'th,td{border:1px solid #cfcfcf;padding:6px;vertical-align:top;}' +
+        'th{background:#f3f3f3;text-align:left;}' +
+        '.total{margin-top:12px;text-align:right;font-size:16px;font-weight:700;}' +
+        '</style></head><body>' +
+        '<h1>' + negocioNombre + '</h1>' +
+        '<div class="sub">Reporte general de pedidos | Fecha: ' + fechaReporte + '</div>' +
+        '<table>' +
+            '<thead>' +
+                '<tr>' +
+                    '<th>Factura</th><th>Fecha</th><th>Cliente</th><th>Email</th><th>Metodo</th><th>Detalle</th><th>Total</th><th>Estado</th>' +
+                '</tr>' +
+            '</thead>' +
+            '<tbody>' + filasHtml + '</tbody>' +
+        '</table>' +
+        '<div class="total">Total general: $' + totalGeneral.toFixed(2) + '</div>' +
+        '</body></html>';
+
+    var ventana = window.open('', '_blank', 'width=1200,height=800');
+    if (!ventana) {
+        alert('No se pudo abrir la ventana para generar el PDF.');
+        return;
+    }
+
+    ventana.document.open();
+    ventana.document.write(contenido);
+    ventana.document.close();
+    ventana.onload = function () {
+        ventana.focus();
+        ventana.print();
+    };
+}
+</script>
+{% endblock %}

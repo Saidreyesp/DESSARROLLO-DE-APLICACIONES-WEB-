@@ -22,6 +22,24 @@
             🛒 Mi Carrito de Pedido
         </h2>
 
+        {% if bebidas %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 style="color:#C9A227; margin-bottom:0.7rem;">🥤 Añadir Bebidas al Pedido</h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for b in bebidas %}
+                        {% if (b.cantidad or 0) > 0 %}
+                        <button type="button" class="btn btn-sm" style="background:#C9A227;border-color:#C9A227;color:#121212;font-weight:700;"
+                            onclick="agregarBebida('{{ b.id }}','{{ (b.nombre or 'Bebida')|replace('\'','\\\'') }}',{{ (b.precio or 0)|float }})">
+                            + {{ b.nombre }} (${{ '%.2f'|format((b.precio or 0)|float) }})
+                        </button>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Carrito vacío -->
         <div id="carritoVacio" class="text-center py-5" style="display:none;">
             <p style="font-size:3rem;">🍽️</p>
@@ -38,7 +56,7 @@
                     <table class="table table-hover mb-0" style="color:#F5F1E8;">
                         <thead style="background:#2a2a2a; color:#C9A227;">
                             <tr>
-                                <th class="px-3 py-3">Plato</th>
+                                <th class="px-3 py-3">Producto</th>
                                 <th class="text-center py-3">Cantidad</th>
                                 <th class="text-end py-3">Precio unit.</th>
                                 <th class="text-end py-3">Subtotal</th>
@@ -110,6 +128,18 @@ function getCarrito(){
 function saveCarrito(c){
     localStorage.setItem(KEY, JSON.stringify(c));
     if(window.actualizarCartBadge) window.actualizarCartBadge();
+}
+
+function agregarBebida(id, nombre, precio){
+    var items = getCarrito();
+    var existente = items.find(function(x){ return String(x.id) === String(id); });
+    if(existente){
+        existente.cantidad = (existente.cantidad || 1) + 1;
+    } else {
+        items.push({ id: String(id), nombre: nombre, precio: Number(precio || 0), cantidad: 1 });
+    }
+    saveCarrito(items);
+    renderCarrito();
 }
 
 function renderCarrito(){
